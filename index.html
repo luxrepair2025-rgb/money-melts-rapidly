@@ -33,7 +33,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{c
 .toast.gain{border-left-color:var(--g)}.toast.loss{border-left-color:var(--r)}.toast.out{opacity:0;transform:translateY(10px)}
 @keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 </style></head><body><div id="toasts"></div>
-<header><h1>🔥💸 Money Melts Rapidly<small>MMR — the market value your wallet will never see again</small></h1>
+<header><h1>🔥💸 Money Melts Rapidly <span id="verHdr" style="font-size:11px;font-weight:600;color:var(--mut);border:1px solid var(--line);border-radius:6px;padding:1px 5px;vertical-align:middle"></span><small>MMR — the market value your wallet will never see again</small></h1>
 <div class="stats"><div>Day<b id="sDay"></b></div><div>Cash<b id="sCash"></b></div><div>Net P/L<b id="sPL"></b></div><div>Rep<b id="sRep"></b></div><div>Lot<b id="sLot"></b></div><div>Tier<b id="sTier"></b></div></div></header>
 <main>
 <section class="card" id="lane"></section>
@@ -46,7 +46,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{c
 <script>
 const $=id=>document.getElementById(id),R=Math.random,ri=(a,b)=>Math.floor(a+R()*(b-a+1)),pick=a=>a[Math.floor(R()*a.length)],$$=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
 const FEE=p=>Math.round(150+p*0.04),SLOTS=5,KEY='mmr_save_v1';
-const VERSION='0.2.3';
+const VERSION='0.2.4';
 // [tier, make, model, new price, body]
 const MODELS=[
 [1, "Toyota", "Corolla", 20000, "sedan"],
@@ -194,7 +194,7 @@ S.lot.forEach(c=>{c.daysOnLot++;if(c.daysOnLot>6&&!c.listed)c.mmr=Math.round(c.m
 S.lot.filter(c=>c.listed).forEach(c=>{c.listDays=(c.listDays||0)+1;if(c.listDays>=SELL_DAYS())sell(c,suggestedRetail(c),'retail')});
 if(S.cash<0&&S.lot.length===0||S.cash<-3000){save();return gameOver()}newDay()}
 function gameOver(){modal(`<h2>💀 Bankrupt</h2><p>Your money melted. Rapidly. As foretold.</p><p>Days survived: ${S.day}<br>Cars bought: ${S.bought} · sold: ${S.sold}<br>Net P/L: ${$$(S.pl)}</p><button class="pri" onclick="closeM();newGame()">Try Again</button>`);localStorage.removeItem(KEY)}
-function render(){$('sDay').textContent=S.day;$('sCash').innerHTML=`<span class="${S.cash<0?'r':'g'}">${$$(S.cash)}</span>`;$('sPL').innerHTML=`<span class="${S.pl<0?'r':'g'}">${$$(S.pl)}</span>`;$('sRep').textContent=S.rep+(S.rep>70?' 😇':S.rep<30?' 🤡':'');$('sLot').textContent=S.lot.length+'/'+SLOTS;$('sTier').textContent=TIERS[S.tier-1].e+' '+S.tier;$('ver').textContent=VERSION;renderCareer();
+function render(){$('sDay').textContent=S.day;$('sCash').innerHTML=`<span class="${S.cash<0?'r':'g'}">${$$(S.cash)}</span>`;$('sPL').innerHTML=`<span class="${S.pl<0?'r':'g'}">${$$(S.pl)}</span>`;$('sRep').textContent=S.rep+(S.rep>70?' 😇':S.rep<30?' 🤡':'');$('sLot').textContent=S.lot.length+'/'+SLOTS;$('sTier').textContent=TIERS[S.tier-1].e+' '+S.tier;$('ver').textContent=VERSION;$('verHdr').textContent='v'+VERSION;renderCareer();
 $('lotList').innerHTML=S.lot.length?S.lot.map(c=>{const fix=c.iss.filter(i=>!i.fixed&&!i.perm).reduce((a,i)=>a+i.c,0),tv=trueValue(c);
 return`<div class="lot">${carImg(c,'thumb')}<b>${c.name}</b> <span class="m">· ${c.daysOnLot}d on lot</span>${c.gem?' 💎':''}<div class="row"><span>Into it: ${$$(c.cost)}</span></div><div class="row"><span>MMR <b class="y">${$$(c.mmr)}</b></span><span>Suggested Retail <b class="${suggestedRetail(c)>c.cost?'g':'r'}">${$$(suggestedRetail(c))}</b></span></div>
 <div class="m" style="font-size:12px">${c.iss.map(i=>`${i.fixed?'✅':i.perm?'⛔':'🔧'} ${i.n}`).join('<br>')||'No known issues'}</div>
