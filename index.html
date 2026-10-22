@@ -129,10 +129,15 @@ const gem=R()<.15?pick(GEMS):null;const grade=(Math.max(1,5-iss.reduce((a,b)=>a+
 return{id:Date.now()+R(),name:`${yr} ${mk} ${md}`,tier,body,slug:slug(mk+' '+md),mi,mmr,grade,iss,gem,insp:false,detailed:false,daysOnLot:0}}
 function newDay(){cur=Array.from({length:ri(4,6)},genCar);cur.idx=0;save();render();showCar()}
 function trueValue(c){let v=c.mmr*(c.gem?1.18:1);c.iss.forEach(i=>{if(!i.fixed)v-=i.perm?c.mmr*i.v:i.c*1.3+c.mmr*i.v*.3});if(c.detailed)v*=1.05;return Math.max(300,Math.round(v))}
+function retailOf(v){return Math.round(v*1.15*(1+(S.rep-50)/1000)/50)*50}
+function suggestedRetail(c){return retailOf(trueValue(c))}
+function estRetail(c){let v=c.mmr*(c.gem&&c.insp?1.18:1);c.iss.forEach(i=>{if(i.shown)v-=i.perm?c.mmr*i.v:i.c*1.3+c.mmr*i.v*.3});return retailOf(Math.max(300,v))}
+const SELL_DAYS=()=>S.rep>=70?2:S.rep<30?4:3;
 function showCar(){clearInterval(auc?.t);const c=cur[cur.idx];if(!c){$('lane').innerHTML=`<h2>Lane closed</h2><p>That's all the iron for today. The auctioneer has lost his voice (again).</p><button class="pri" onclick="endDay()">End Day ➜</button>`;return}
 const known=c.iss.filter(i=>i.shown);
 $('lane').innerHTML=`<h2>Lane 7 · Run ${cur.idx+1}/${cur.length}</h2><div class="car">${carImg(c,'carimg')}<h3>${c.name}${c.tier>S.tier?`<span class="tag">👀 Tier ${c.tier} teaser</span>`:c.tier<S.tier?'<span class="tag">🗑️ Bargain bin</span>':''}</h3>
-<div class="row"><span>${c.mi.toLocaleString()} mi</span><span>Grade <span class="grade">${c.grade}</span></span><span>MMR <b class="y">${$$(c.mmr)}</b></span></div>
+<div class="row"><span>${c.mi.toLocaleString()} mi</span><span>Grade <span class="grade">${c.grade}</span></span></div>
+<div class="row" style="font-size:18px;background:#10151c;border:1px solid var(--line);border-radius:10px;padding:10px"><span>MMR<br><b class="y" style="font-size:22px">${$$(c.mmr)}</b></span><span style="text-align:right">Suggested Retail <span class="m" style="font-size:12px">(est., visible condition)</span><br><b class="g" style="font-size:22px">${$$(estRetail(c))}</b></span></div>
 <b>Condition report</b> <span class="m">(partial, written by an optimist)</span><ul>${known.length?known.map(i=>`<li class="r">${i.n}</li>`).join(''):'<li class="m">"Runs and drives." (allegedly)</li>'}${c.gem&&c.insp?`<li class="g">💎 ${c.gem}</li>`:''}</ul>
 ${c.insp?'<p class="m">🔍 Inspected.</p>':`<button onclick="inspect()">🔍 Inspection ($${150+Math.round(c.mmr*.005)})</button>`}
 <div class="bidbox"><div class="m" id="who">Starting bid</div><div class="bid" id="bid"></div><div class="timer"><i id="tm"></i></div><p class="m" id="quip">${pick(QUIPS)}</p></div>
@@ -142,6 +147,7 @@ auc={price:Math.round(c.mmr*.45/100)*100,lead:null,left:0,run:false};$('bid').te
 function inspect(){const c=cur[cur.idx],cost=150+Math.round(c.mmr*.005);if(S.cash<cost)return alert("Can't afford the clipboard guy.");S.cash-=cost;c.insp=true;c.iss.forEach(i=>{if(R()<.7)i.shown=true});log(`Paid ${$$(cost)} to inspect ${c.name}.`);render();showCar()}
 function startAuction(){const c=cur[cur.idx];auc.run=true;auc.left=100;$('startBtn').disabled=true;$('bidBtn').disabled=false;
 const ceil=trueValue(c)*(.8+R()*.25);auc.ai=ceil;
+if(R()<.5&&auc.price<auc.ai){auc.lead='ai';$('who').innerHTML=`<span class="r">${pick(["Monster Hat","Dealer #4471","Wholesale Wayne"])}</span> opens the bidding`;}else $('who').innerHTML='Floor bid — waiting on you';
 auc.t=setInterval(()=>{auc.left-=1.25;$('tm').style.width=Math.max(0,auc.left)+'%';
 if(auc.left>5&&R()<.09&&auc.price+inc()<auc.ai&&auc.lead!=='ai'){auc.price+=inc();auc.lead='ai';$('who').innerHTML=`<span class="r">${pick(["Monster Hat","Dealer #4471","Wholesale Wayne","CarMax-ish guy","Buy-Here-Pay-Here Bob"])}</span> leads`;$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,35);if(R()<.3)$('quip').textContent=pick(QUIPS)}
 if(auc.left<=0)finish()},100)}
@@ -157,28 +163,28 @@ cur.idx++;save();render();if(!$('modal').classList.contains('on'))showCar()}
 function skip(){clearInterval(auc.t);cur.idx++;showCar()}
 function reveal(c){const ns=c.iss.filter(i=>!i.shown);modal(`<h2>🚗 Post-Sale Reveal</h2><h3>${c.name}</h3>
 ${c.gem?`<p class="g">💎 GEM: ${c.gem}</p>`:''}${c.iss.length?'<ul>'+c.iss.map(i=>`<li>${i.shown?'':'🆕 '}<b>${i.n}</b> — ${i.perm?'<span class="r">permanent value hit</span>':'repair '+$$(i.c)}<br><span class="m">${i.o}</span></li>`).join('')+'</ul>':'<p class="g">Clean as a whistle. Suspiciously clean.</p>'}
-<p>${ns.length?`<span class="r">${ns.length} surprise(s)</span> the report forgot.`:'No surprises!'} Est. retail value now: <b class="y">${$$(trueValue(c))}</b> (paid ${$$(c.cost)})</p><button class="pri" onclick="closeM();showCar()">To the lot</button>`)}
+<p>${ns.length?`<span class="r">${ns.length} surprise(s)</span> the report forgot.`:'No surprises!'} Suggested Retail now: <b class="y">${$$(suggestedRetail(c))}</b> (paid ${$$(c.cost)})</p><button class="pri" onclick="closeM();showCar()">To the lot</button>`)}
 function modal(h){$('mbody').innerHTML=h;$('modal').classList.add('on')}function closeM(){$('modal').classList.remove('on');render()}
 function repair(id){const c=S.lot.find(x=>x.id==id),todo=c.iss.filter(i=>!i.fixed&&!i.perm);let tot=todo.reduce((a,i)=>a+i.c,0);if(!tot)return;if(S.cash<tot)return alert("Mechanic wants cash, not vibes.");S.cash-=tot;c.cost+=tot;
 let msg=`Repaired ${c.name} for ${$$(tot)}.`;todo.forEach(i=>i.fixed=true);if(R()<.15){const x=pick(ISSUES.filter(i=>!i.perm));c.iss.push({...x,c:Math.round(x.c*tm(c)),revealed:true});msg+=` While in there, they found: ${x.n}. 🙃`}log(msg,'y');save();render()}
 const DET=c=>Math.round(250*tm(c));
 function detail(id){const c=S.lot.find(x=>x.id==id),d=DET(c);if(c.detailed||S.cash<d)return;S.cash-=d;c.cost+=d;c.detailed=true;log(`Detailed ${c.name}. Armor All everywhere. Even the pedals.`);save();render()}
-function offer(c){const tv=trueValue(c),k=.75+R()*.3+(S.rep-50)/500+Math.min(c.daysOnLot,10)*.01;return Math.round(tv*k/50)*50}
-function acceptOffer(id){const c=S.lot.find(x=>x.id==id);sell(c,c.offer,'retail');}
+function listRetail(id){const c=S.lot.find(x=>x.id==id);c.listed=!c.listed;c.listDays=0;log(c.listed?`Listed ${c.name} at ${$$(suggestedRetail(c))}. Balloons tied to the mirrors.`:`Pulled ${c.name} off the front line.`);save();render()}
 function sell(c,amt,how){S.cash+=amt;const p=amt-c.cost;S.pl+=p;S.sold++;S.lot=S.lot.filter(x=>x!==c);
 const hidden=c.iss.filter(i=>!i.fixed&&!i.perm&&i.c>500).length;if(how==='retail'){S.rep=Math.max(0,Math.min(100,S.rep+(hidden?-6*hidden:3)));if(hidden)log(`Buyer discovered unfixed problems. Yelp review: ⭐ "Never again."`,'r')}
 checkTier();log(`${how==='retail'?'🤝 Retail sold':'🔁 Ran back'} ${c.name} for ${$$(amt)} → ${p>=0?'<span class="g">+':'<span class="r">'}${$$(p)}</span>`);save();render()}
 function runBack(id){const c=S.lot.find(x=>x.id==id),amt=Math.round(trueValue(c)*(.72+R()*.2)/50)*50,fee=FEE(amt)*.6|0;sell(c,amt-fee,'auction')}
 function endDay(){S.day++;const m=TIERS[S.tier-1].m,rent=Math.round(200*m+S.lot.reduce((a,c)=>a+40*tm(c),0));S.cash-=rent;log(`Lot rent & insurance: ${$$(rent)}.`,'m');
-S.lot.forEach(c=>{c.daysOnLot++;c.offer=R()<.55+S.rep/250?offer(c):null;if(c.daysOnLot>6)c.mmr=Math.round(c.mmr*.98)});
+S.lot.forEach(c=>{c.daysOnLot++;if(c.daysOnLot>6&&!c.listed)c.mmr=Math.round(c.mmr*.98)});
+S.lot.filter(c=>c.listed).forEach(c=>{c.listDays=(c.listDays||0)+1;if(c.listDays>=SELL_DAYS())sell(c,suggestedRetail(c),'retail')});
 if(S.cash<0&&S.lot.length===0||S.cash<-3000){save();return gameOver()}newDay()}
 function gameOver(){modal(`<h2>💀 Bankrupt</h2><p>Your money melted. Rapidly. As foretold.</p><p>Days survived: ${S.day}<br>Cars bought: ${S.bought} · sold: ${S.sold}<br>Net P/L: ${$$(S.pl)}</p><button class="pri" onclick="closeM();newGame()">Try Again</button>`);localStorage.removeItem(KEY)}
 function render(){$('sDay').textContent=S.day;$('sCash').innerHTML=`<span class="${S.cash<0?'r':'g'}">${$$(S.cash)}</span>`;$('sPL').innerHTML=`<span class="${S.pl<0?'r':'g'}">${$$(S.pl)}</span>`;$('sRep').textContent=S.rep+(S.rep>70?' 😇':S.rep<30?' 🤡':'');$('sLot').textContent=S.lot.length+'/'+SLOTS;$('sTier').textContent=TIERS[S.tier-1].e+' '+S.tier;$('ver').textContent=VERSION;renderCareer();
 $('lotList').innerHTML=S.lot.length?S.lot.map(c=>{const fix=c.iss.filter(i=>!i.fixed&&!i.perm).reduce((a,i)=>a+i.c,0),tv=trueValue(c);
-return`<div class="lot">${carImg(c,'thumb')}<b>${c.name}</b> <span class="m">· ${c.daysOnLot}d on lot</span>${c.gem?' 💎':''}<div class="row"><span>Into it: ${$$(c.cost)}</span><span>Est value: <b class="${tv>c.cost?'g':'r'}">${$$(tv)}</b></span></div>
+return`<div class="lot">${carImg(c,'thumb')}<b>${c.name}</b> <span class="m">· ${c.daysOnLot}d on lot</span>${c.gem?' 💎':''}<div class="row"><span>Into it: ${$$(c.cost)}</span></div><div class="row"><span>MMR <b class="y">${$$(c.mmr)}</b></span><span>Suggested Retail <b class="${suggestedRetail(c)>c.cost?'g':'r'}">${$$(suggestedRetail(c))}</b></span></div>
 <div class="m" style="font-size:12px">${c.iss.map(i=>`${i.fixed?'✅':i.perm?'⛔':'🔧'} ${i.n}`).join('<br>')||'No known issues'}</div>
 ${fix?`<button onclick="repair(${c.id})">🔧 Repair all ${$$(fix)}</button>`:''}${c.detailed?'':`<button onclick="detail(${c.id})">✨ Detail ${$$(DET(c))}</button>`}
-${c.offer?`<button class="go" onclick="acceptOffer(${c.id})">Accept offer ${$$(c.offer)}</button><button onclick="S.lot.find(x=>x.id==${c.id}).offer=null;render()">Decline</button>`:'<span class="m" style="font-size:12px"> Waiting for retail offers (end day)…</span>'}
+${c.listed?`<button onclick="listRetail(${c.id})">Unlist</button><span class="m" style="font-size:12px"> 🏷️ Listed · sells at ~${$$(suggestedRetail(c))} in ${Math.max(0,SELL_DAYS()-(c.listDays||0))} day(s)</span>`:`<button class="go" onclick="listRetail(${c.id})">🏷️ List retail at ${$$(suggestedRetail(c))}</button>`}
 <button class="bad" onclick="runBack(${c.id})">🔁 Run back through auction</button></div>`}).join(''):'<p class="m">Empty lot. Just you and a sad inflatable tube man.</p>';
 $('log').innerHTML=S.log.map(x=>`<div>${x}</div>`).join('')}
 function nextReq(){return TIERS[S.tier]}
