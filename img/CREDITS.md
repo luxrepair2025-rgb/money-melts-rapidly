@@ -1,0 +1,43 @@
+# Photo credits
+
+All vehicle photos are from Wikimedia Commons, resized to 640px wide and recompressed. Licenses as listed; click through for full terms. Models without a photo use stylized SVG silhouettes drawn in-game.
+
+- `audi-a6.jpg`: [File:Audi A6 Allroad Quattro C8 1X7A0302.jpg](https://commons.wikimedia.org/wiki/File:Audi_A6_Allroad_Quattro_C8_1X7A0302.jpg) by Alexander Migl, CC BY-SA 4.0
+- `bentley-continental-gt.jpg`: [File:Bentley Continental GTC (II) – Frontansicht (3), 25. Oktober 2011, Düsseldorf.jpg](https://commons.wikimedia.org/wiki/File:Bentley_Continental_GTC_(II)_%E2%80%93_Frontansicht_(3),_25._Oktober_2011,_D%C3%BCsseldorf.jpg) by M 93, CC BY-SA 3.0 de
+- `bmw-5-series.jpg`: [File:BMW 5 SERIES (G30) HONG KONG.jpg](https://commons.wikimedia.org/wiki/File:BMW_5_SERIES_(G30)_HONG_KONG.jpg) by Dinkun Chen, CC BY-SA 4.0
+- `bmw-m3.jpg`: [File:BMW M3 Competition (G80) 1X7A1573.jpg](https://commons.wikimedia.org/wiki/File:BMW_M3_Competition_(G80)_1X7A1573.jpg) by Alexander-93, CC BY-SA 4.0
+- `buick-lesabre.jpg`: [File:2003 Buick LeSabre Custom (33526252464).jpg](https://commons.wikimedia.org/wiki/File:2003_Buick_LeSabre_Custom_(33526252464).jpg) by Greg Gjerdingen from Willmar, USA, CC BY 2.0
+- `cadillac-escalade.jpg`: [File:2021 Cadillac Escalade rear.jpg](https://commons.wikimedia.org/wiki/File:2021_Cadillac_Escalade_rear.jpg) by Baron Maddock, CC BY 4.0
+- `chevy-cavalier.jpg`: [File:2003 Chevrolet Cavalier Coupe.jpg](https://commons.wikimedia.org/wiki/File:2003_Chevrolet_Cavalier_Coupe.jpg) by 2001FordRangerXLT, CC BY-SA 4.0
+- `chevy-corvette.jpg`: [File:Chevrolet Corvette C8 IAA 2021 1X7A0156.jpg](https://commons.wikimedia.org/wiki/File:Chevrolet_Corvette_C8_IAA_2021_1X7A0156.jpg) by Alexander Migl, CC BY-SA 4.0
+- `chevy-silverado.jpg`: [File:2019 Chevrolet Silverado 1500 Crew Cab LT (front), 10.20.19.jpg](https://commons.wikimedia.org/wiki/File:2019_Chevrolet_Silverado_1500_Crew_Cab_LT_(front),_10.20.19.jpg) by Ghostofakina, CC BY-SA 4.0
+- `dodge-caravan.jpg`: [File:Dodge Grand Caravan 2005-07.JPG](https://commons.wikimedia.org/wiki/File:Dodge_Grand_Caravan_2005-07.JPG) by Bull-Doser, Public domain
+- `dodge-challenger-hellcat.jpg`: [File:White Dodge Challenger SRT side view.jpg](https://commons.wikimedia.org/wiki/File:White_Dodge_Challenger_SRT_side_view.jpg) by Renée Kools, CC BY 4.0
+- `ford-crown-victoria.jpg`: [File:US Capitol Police Cruiser Ford Crown Vic fr.jpg](https://commons.wikimedia.org/wiki/File:US_Capitol_Police_Cruiser_Ford_Crown_Vic_fr.jpg) by Matti Blume (MB-one), CC BY-SA 4.0
+- `ford-f-150.jpg`: [File:Ford F-150 Raptor 3.5T 2018 (45840639514).jpg](https://commons.wikimedia.org/wiki/File:Ford_F-150_Raptor_3.5T_2018_(45840639514).jpg) by RL GNZLZ from Chile, CC BY-SA 2.0
+- `ford-mustang-gt.jpg`: [File:2018 Ford Mustang GT 5.0 Rear.jpg](https://commons.wikimedia.org/wiki/File:2018_Ford_Mustang_GT_5.0_Rear.jpg) by Vauxford, CC BY-SA 4.0
+- `ford-taurus.jpg`: [File:2000-2003 Ford Taurus Sedan.JPG](https://commons.wikimedia.org/wiki/File:2000-2003_Ford_Taurus_Sedan.JPG) by Bull-Doser, Public domain
+- `genesis-g80.jpg`: [File:Genesis G80 (DH) IAA 2021 1X7A0163.jpg](https://commons.wikimedia.org/wiki/File:Genesis_G80_(DH)_IAA_2021_1X7A0163.jpg) by Alexander Migl, CC BY-SA 4.0
+- `honda-accord.jpg`: [File:2018 Honda Accord Touring 2.0t.jpg](https://commons.wikimedia.org/wiki/File:2018_Honda_Accord_Touring_2.0t.jpg) by DestinationFearFan, CC BY-SA 4.0
+- `honda-civic.jpg`: [File:2003 Honda Civic Sedan.JPG](https://commons.wikimedia.org/wiki/File:2003_Honda_Civic_Sedan.JPG) by Rendywardana, CC BY-SA 3.0
+- `honda-cr-v.jpg`: [File:2018 Honda CR-V (RW MY18) +Sport 2WD wagon (2018-10-22) 01.jpg](https://commons.wikimedia.org/wiki/File:2018_Honda_CR-V_(RW_MY18)_%2BSport_2WD_wagon_(2018-10-22)_01.jpg) by EurovisionNim, CC BY-SA 4.0
+- `hyundai-elantra.jpg`: [File:2021 Hyundai Elantra Limited in Quartz White, rear left.jpg](https://commons.wikimedia.org/wiki/File:2021_Hyundai_Elantra_Limited_in_Quartz_White,_rear_left.jpg) by Mr.choppers, CC BY-SA 3.0
+- `jeep-wrangler.jpg`: [File:Jeep Wrangler Rubicon (JL) 4xe 1X7A0285.jpg](https://commons.wikimedia.org/wiki/File:Jeep_Wrangler_Rubicon_(JL)_4xe_1X7A0285.jpg) by Alexander Migl, CC BY-SA 4.0
+- `kia-soul.jpg`: [File:Kia Soul 13.09.20 JM.jpg](https://commons.wikimedia.org/wiki/File:Kia_Soul_13.09.20_JM.jpg) by Johannes Maximilian, CC BY-SA 4.0
+- `lamborghini-hurac-n.jpg`: [File:Lamborghini Huracán Tecnica 1X7A7430.jpg](https://commons.wikimedia.org/wiki/File:Lamborghini_Hurac%C3%A1n_Tecnica_1X7A7430.jpg) by Alexander-93, CC BY-SA 4.0
+- `lexus-rx-350.jpg`: [File:2006-2009 and 2009-2012 Lexus RX's Station Wagons (2020-02-11).jpg](https://commons.wikimedia.org/wiki/File:2006-2009_and_2009-2012_Lexus_RX%27s_Station_Wagons_(2020-02-11).jpg) by Trukhin f, CC BY-SA 4.0
+- `mclaren-720s.jpg`: [File:McLaren 720S, IAA 2017, (1Y7A3406).jpg](https://commons.wikimedia.org/wiki/File:McLaren_720S,_IAA_2017,_(1Y7A3406).jpg) by Matti Blume, CC BY-SA 4.0
+- `mercedes-amg-c63.jpg`: [File:MERCEDES-AMG C63 (W204) HONG KONG.jpg](https://commons.wikimedia.org/wiki/File:MERCEDES-AMG_C63_(W204)_HONG_KONG.jpg) by Dinkun Chen, CC BY-SA 4.0
+- `mercedes-e-class.jpg`: [File:MERCEDES-BENZ E-CLASS (W213) China.jpg](https://commons.wikimedia.org/wiki/File:MERCEDES-BENZ_E-CLASS_(W213)_China.jpg) by Dinkun Chen, CC BY-SA 4.0
+- `nissan-altima.jpg`: [File:Nissan Altima 10-12-2019.jpg](https://commons.wikimedia.org/wiki/File:Nissan_Altima_10-12-2019.jpg) by SsmIntrigue, CC BY-SA 4.0
+- `nissan-gt-r.jpg`: [File:Nissan GT-R R35 at the 2026 Adelaide Motorsport Festival (DSCF2567).jpg](https://commons.wikimedia.org/wiki/File:Nissan_GT-R_R35_at_the_2026_Adelaide_Motorsport_Festival_(DSCF2567).jpg) by Yu Chu Chin, CC BY-SA 4.0
+- `nissan-sentra.jpg`: [File:1990 Nissan Sentra.JPG](https://commons.wikimedia.org/wiki/File:1990_Nissan_Sentra.JPG) by Montrose Patriot at English Wikipedia, Public domain
+- `pontiac-aztek.jpg`: [File:Pontiac Aztek IMG 20180408 125514.jpg](https://commons.wikimedia.org/wiki/File:Pontiac_Aztek_IMG_20180408_125514.jpg) by Alexander Migl, CC BY-SA 4.0
+- `porsche-911-turbo-s.jpg`: [File:Porsche 992 Turbo S 1X7A0413.jpg](https://commons.wikimedia.org/wiki/File:Porsche_992_Turbo_S_1X7A0413.jpg) by Alexander Migl, CC BY-SA 4.0
+- `porsche-cayman.jpg`: [File:2018 Porsche 718 Cayman.jpg](https://commons.wikimedia.org/wiki/File:2018_Porsche_718_Cayman.jpg) by 多多123, CC BY 4.0
+- `range-rover-sport.jpg`: [File:Land Rover Range Rover Sport L494 facelift China 2018-03-28.jpg](https://commons.wikimedia.org/wiki/File:Land_Rover_Range_Rover_Sport_L494_facelift_China_2018-03-28.jpg) by Navigator84, CC BY-SA 4.0
+- `saturn-ion.jpg`: [File:Saturn Ion -- 07-09-2009.jpg](https://commons.wikimedia.org/wiki/File:Saturn_Ion_--_07-09-2009.jpg) by IFCAR, Public domain
+- `subaru-outback.jpg`: [File:2020 Subaru Outback AWD, front.jpg](https://commons.wikimedia.org/wiki/File:2020_Subaru_Outback_AWD,_front.jpg) by Kevauto, CC BY-SA 4.0
+- `tesla-model-s.jpg`: [File:20180630 Tesla Model S 70D 2015 midnight blue left front.jpg](https://commons.wikimedia.org/wiki/File:20180630_Tesla_Model_S_70D_2015_midnight_blue_left_front.jpg) by Granada, CC BY-SA 4.0
+- `toyota-camry.jpg`: [File:2018 Toyota Camry 2.jpg](https://commons.wikimedia.org/wiki/File:2018_Toyota_Camry_2.jpg) by MjhdNfl, CC BY-SA 4.0
+- `toyota-corolla.jpg`: [File:2005 Toyota Corolla 1.4 T3.jpg](https://commons.wikimedia.org/wiki/File:2005_Toyota_Corolla_1.4_T3.jpg) by Jayme Kimball, CC BY-SA 4.0
