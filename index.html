@@ -42,7 +42,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{c
 <script>
 const $=id=>document.getElementById(id),R=Math.random,ri=(a,b)=>Math.floor(a+R()*(b-a+1)),pick=a=>a[Math.floor(R()*a.length)],$$=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
 const FEE=p=>Math.round(150+p*0.04),SLOTS=5,KEY='mmr_save_v1';
-const VERSION='0.2.1';
+const VERSION='0.2.2';
 // [tier, make, model, new price, body]
 const MODELS=[
 [1, "Toyota", "Corolla", 20000, "sedan"],
@@ -145,14 +145,21 @@ ${c.insp?'<p class="m">🔍 Inspected.</p>':`<button onclick="inspect()">🔍 In
 <p class="m" style="font-size:12px">Buyer fee ≈ $150 + 4%. Lot slots: ${S.lot.length}/${SLOTS}</p></div>`;
 auc={price:Math.round(c.mmr*.45/100)*100,lead:null,left:0,run:false};$('bid').textContent=$$(auc.price);$('bidBtn').disabled=true}
 function inspect(){const c=cur[cur.idx],cost=150+Math.round(c.mmr*.005);if(S.cash<cost)return alert("Can't afford the clipboard guy.");S.cash-=cost;c.insp=true;c.iss.forEach(i=>{if(R()<.7)i.shown=true});log(`Paid ${$$(cost)} to inspect ${c.name}.`);render();showCar()}
-function startAuction(){const c=cur[cur.idx];auc.run=true;auc.left=100;$('startBtn').disabled=true;$('bidBtn').disabled=false;
-const ceil=trueValue(c)*(.8+R()*.25);auc.ai=ceil;
-if(R()<.5&&auc.price<auc.ai){auc.lead='ai';$('who').innerHTML=`<span class="r">${pick(["Monster Hat","Dealer #4471","Wholesale Wayne"])}</span> opens the bidding`;}else $('who').innerHTML='Floor bid — waiting on you';
-auc.t=setInterval(()=>{auc.left-=1.25;$('tm').style.width=Math.max(0,auc.left)+'%';
-if(auc.left>5&&R()<.09&&auc.price+inc()<auc.ai&&auc.lead!=='ai'){auc.price+=inc();auc.lead='ai';$('who').innerHTML=`<span class="r">${pick(["Monster Hat","Dealer #4471","Wholesale Wayne","CarMax-ish guy","Buy-Here-Pay-Here Bob"])}</span> leads`;$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,35);if(R()<.3)$('quip').textContent=pick(QUIPS)}
-if(auc.left<=0)finish()},100)}
+const AINAMES=["Monster Hat","Dealer #4471","Wholesale Wayne","CarMax-ish guy","Buy-Here-Pay-Here Bob","Flip-It Phil","Lot Lizard Linda"];
+function startAuction(){const c=cur[cur.idx];auc.run=true;auc.left=100;auc.tick=0;auc.pending=null;$('startBtn').disabled=true;$('bidBtn').disabled=false;
+const tv=trueValue(c),names=[...AINAMES].sort(()=>R()-.5);auc.bidders=Array.from({length:ri(2,4)},(_,k)=>({n:names[k],ceil:Math.round(tv*(.65+R()*.4)),drop:R()<.25?.4+R()*.5:2,out:false}));
+auc.ai=Math.max(...auc.bidders.map(b=>b.ceil));
+const op=auc.bidders.find(b=>b.ceil>auc.price);if(R()<.5&&op){auc.lead='ai';auc.leader=op;$('who').innerHTML=`<span class="r">${op.n}</span> opens the bidding`;}else $('who').innerHTML='Floor bid — waiting on you';
+auc.t=setInterval(aucTick,100)}
+function aucTick(){auc.tick++;auc.left-=1.25;$('tm').style.width=Math.max(0,auc.left)+'%';
+if(auc.pending!==null&&auc.tick>=auc.pending){auc.pending=null;aiRespond()}
+if(auc.left<=0&&auc.pending===null)finish()}
+function aiRespond(){if(!auc.run||auc.lead!=='you')return false;const nx=auc.price+inc();
+auc.bidders.forEach(b=>{if(!b.out&&(nx>b.ceil||nx>b.ceil*b.drop)){b.out=true;}});
+const live=auc.bidders.filter(b=>!b.out);if(!live.length){$('quip').textContent='The room goes quiet… 🦗';return false}
+const b=pick(live);auc.price=nx;auc.lead='ai';auc.leader=b;$('who').innerHTML=`<span class="r">${b.n}</span> leads`;$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,30);if(R()<.3)$('quip').textContent=pick(QUIPS);return true}
 function inc(){return auc.price<5000?100:auc.price<15000?250:500}
-function playerBid(){if(!auc.run)return;const nx=auc.price+(auc.lead?inc():0);if(nx+FEE(nx)>S.cash)return flash("Insufficient funds. The bank laughed.");auc.price=nx;auc.lead='you';$('who').innerHTML='<span class="g">YOU</span> lead';$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,40)}
+function playerBid(){if(!auc.run)return;const nx=auc.price+(auc.lead?inc():0);if(nx+FEE(nx)>S.cash)return flash("Insufficient funds. The bank laughed.");auc.price=nx;auc.lead='you';$('who').innerHTML='<span class="g">YOU</span> lead';$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,44);auc.pending=auc.tick+ri(5,25)}
 function flash(t){$('quip').innerHTML=`<span class="r">${t}</span>`}
 function finish(){clearInterval(auc.t);auc.run=false;const c=cur[cur.idx];
 if(auc.lead==='you'){if(S.lot.length>=SLOTS){log(`Won ${c.name} but your lot is full — sold back at a $300 penalty.`,'r');S.cash-=300;S.pl-=300}else{const fee=FEE(auc.price);c.cost=auc.price+fee;S.cash-=c.cost;S.bought++;S.lot.push(c);
