@@ -42,7 +42,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{c
 <script>
 const $=id=>document.getElementById(id),R=Math.random,ri=(a,b)=>Math.floor(a+R()*(b-a+1)),pick=a=>a[Math.floor(R()*a.length)],$$=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
 const FEE=p=>Math.round(150+p*0.04),SLOTS=5,KEY='mmr_save_v1';
-const VERSION='0.2.0';
+const VERSION='0.2.1';
 // [tier, make, model, new price, body]
 const MODELS=[
 [1, "Toyota", "Corolla", 20000, "sedan"],
@@ -194,4 +194,52 @@ function renderCareer(){const T=TIERS[S.tier-1],n=nextReq(),p=Math.round(prog()*
 $('career').innerHTML=`<h2>Career</h2><b>${T.e} Tier ${S.tier}: ${T.n}</b> <span class="m">· ${T.quip}</span>`+(n?`<div class="pbar"><i style="width:${p}%"></i></div><div class="m" style="font-size:12px">Next: ${n.e} ${n.n} (${p}%) — need net P/L ${$$(Math.max(0,S.pl))}/${$$(n.pl)} · sold ${S.sold}/${n.sold} · rep ${S.rep}/${n.rep}</div>`:'<p class="g">Top tier. The money now melts at supercar speed.</p>')}
 function migrate(s){if(!s)return s;s.tier=s.tier||1;(s.lot||[]).forEach(c=>{if(!c.slug){const nm=c.name.replace(/^\d{4} /,''),m=MODELS.find(x=>`${x[1]} ${x[2]}`===nm);c.slug=slug(nm);c.body=m?m[4]:'sedan';c.tier=m?m[0]:1}});if(s.v!==VERSION){s.v=VERSION;s.log=s.log||[];s.log.unshift(`<span class="y">Updated to v${VERSION}: car photos and tiers. Your beaters survived the update.</span>`)}const t=s.tier;s.tier=1;S=s;checkTier();S.tier=Math.max(S.tier,t);return S}
 try{S=migrate(JSON.parse(localStorage.getItem(KEY)))}catch(e){S=null}if(S){render();newDay()}else newGame();
-</script></body></html>
+</script>
+<script>
+/* ---- Online layer (v0.2.1): never blocks gameplay; fully works offline ---- */
+(function(){
+const API_BASE=window.MMR_API_BASE||'https://mmr-api.bluelightgrid.com';
+const TK='mmr_token',PID='mmr_player',NM='mmr_name',ASKED='mmr_name_asked';
+let creating=null,evq=[],evT=null,svT=null;
+async function raw(path,o={},tok){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);
+ try{const r=await fetch(API_BASE+path,{method:o.method||'GET',signal:ctl.signal,headers:{'Content-Type':'application/json',...(tok?{Authorization:'Bearer '+tok}:{})},body:o.body?JSON.stringify(o.body):undefined});
+ const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error('http '+r.status),{status:r.status,body:j});return j}finally{clearTimeout(to)}}
+async function token(){let t=localStorage.getItem(TK);if(t)return t;
+ creating=creating||raw('/players',{method:'POST',body:localStorage.getItem(NM)?{name:localStorage.getItem(NM)}:{}}).then(r=>{localStorage.setItem(TK,r.token);localStorage.setItem(PID,r.playerId);if(r.name)localStorage.setItem(NM,r.name);return r.token}).finally(()=>creating=null);
+ return creating}
+async function api(path,o={}){let t=await token();try{return await raw(path,o,t)}catch(e){if(e.status===401){localStorage.removeItem(TK);t=await token();return raw(path,o,t)}throw e}}
+window.mmrApi=api;
+function track(type,data){evq.push({type,version:VERSION,platform:'web',...(data?{data}:{})});clearTimeout(evT);evT=setTimeout(flush,type==='game_over'?200:3000)}
+function flush(){if(!evq.length)return;const b=evq.splice(0,50);api('/events',{method:'POST',body:{events:b}}).catch(()=>{if(evq.length<200)evq.unshift(...b)});if(evq.length)evT=setTimeout(flush,3000)}
+window.addEventListener('pagehide',()=>{if(evq.length&&navigator.sendBeacon){/* best effort, no auth needed */try{navigator.sendBeacon(API_BASE+'/events',new Blob([JSON.stringify({events:evq.splice(0,50)})],{type:'text/plain'}))}catch(e){}}});
+function pushSave(){clearTimeout(svT);svT=setTimeout(()=>{if(!S)return;api('/saves',{method:'PUT',body:{data:S,version:VERSION}}).catch(()=>{})},2000)}
+// wrap game functions (global declarations, so calls by name pick these up)
+const _save=save;save=function(){if(S){S.v=VERSION;S.savedAt=Date.now()}_save();pushSave()};
+const _ct=checkTier;checkTier=function(){const b=S.tier;_ct.apply(this,arguments);for(let t=b+1;t<=S.tier;t++)track('tier_unlock',{tier:t})};
+const _ed=endDay;endDay=function(){const d=S.day,pl=S.pl,cash=S.cash;track('day_end',{day:d,pl,cash,tier:S.tier});return _ed.apply(this,arguments)};
+const _go=gameOver;gameOver=function(){const sc={netPL:Math.round(S.pl),daysSurvived:Math.round(S.day),carsSold:Math.round(S.sold),tierReached:Math.round(S.tier||1),version:VERSION};
+ _go.apply(this,arguments);track('game_over',{...sc});
+ api('/scores',{method:'POST',body:sc}).then(()=>{const e=document.getElementById('mbody');if(e)e.insertAdjacentHTML('beforeend','<p class="m">🏆 Score posted. <a href="#" onclick="mmrLB();return false">View leaderboard</a></p>');askName()}).catch(()=>{});
+ clearTimeout(svT);api('/saves',{method:'PUT',body:{data:{over:true,savedAt:Date.now()},version:VERSION}}).catch(()=>{})};
+function askName(){if(localStorage.getItem(NM)||localStorage.getItem(ASKED))return;localStorage.setItem(ASKED,'1');
+ setTimeout(()=>{const n=prompt('Leaderboard name? (optional, up to 20 chars)');if(n&&n.trim())setName(n.trim())},300)}
+async function setName(n){localStorage.setItem(NM,n.slice(0,20));try{const r=await api('/players/me',{method:'PATCH',body:{name:n.slice(0,20)}});if(r&&'name'in r){if(r.name)localStorage.setItem(NM,r.name);else localStorage.removeItem(NM)}}catch(e){}}
+window.mmrSetName=()=>{const n=prompt('Leaderboard name (up to 20 chars):',localStorage.getItem(NM)||'');if(n&&n.trim())setName(n.trim()).then(()=>mmrLB(lbM,lbP))};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MET=[['netPL','Net P/L'],['daysSurvived','Days'],['carsSold','Cars Sold'],['tierReached','Tier']];let lbM='netPL',lbP='all';
+window.mmrLB=async function(m,p){lbM=m||lbM;lbP=p||lbP;const tabs=MET.map(([k,l])=>`<button class="${k===lbM?'pri':''}" onclick="mmrLB('${k}')">${l}</button>`).join(' ')+' &nbsp; '+[['all','All time'],['week','This week']].map(([k,l])=>`<button class="${k===lbP?'pri':''}" onclick="mmrLB(null,'${k}')">${l}</button>`).join(' ');
+ const head=`<h2>🏆 Leaderboard</h2><div>${tabs}</div>`,foot=`<p style="margin-top:8px"><button onclick="mmrSetName()">✏️ ${localStorage.getItem(NM)?'Name: '+esc(localStorage.getItem(NM)):'Set name'}</button> <button onclick="closeM()">Close</button></p>`;
+ modal(head+'<p class="m">Loading…</p>'+foot);
+ try{const r=await raw(`/leaderboard?metric=${lbM}&period=${lbP}`);const rows=Array.isArray(r)?r:(r.entries||r.leaderboard||r.rows||[]);const me=localStorage.getItem(PID);
+  const fmt=v=>lbM==='netPL'?$$(v):v;
+  const body=rows.length?`<table style="width:100%;border-collapse:collapse;margin-top:8px">${rows.map((x,i)=>`<tr style="${x.playerId===me?'color:#ffc94d;font-weight:bold':''}"><td>${x.rank||i+1}</td><td>${esc(x.name||'Anonymous')}</td><td style="text-align:right">${fmt(x.value??x[lbM])}</td></tr>`).join('')}</table>`:'<p class="m">No scores yet. Go lose some money.</p>';
+  if(lbM===m||1)modal(head+body+foot)}catch(e){modal(head+'<p class="m">📴 Leaderboard is offline right now. Your game still saves locally.</p>'+foot)}};
+// UI button
+const sb=document.querySelector('header .stats');if(sb)sb.insertAdjacentHTML('afterend','<div style="text-align:right;margin-top:6px"><button onclick="mmrLB()">🏆 Leaderboard</button> <span class="m" style="font-size:11px">v'+VERSION+'</span></div>');
+// startup: session_start + cloud load (prefer newer)
+track('session_start');
+api('/saves').then(r=>{const c=r&&r.data;if(!c||c.over||!c.day)return;const lt=(S&&S.savedAt)||0;
+ if((c.savedAt||Date.parse(r.updatedAt)||0)>lt+1000){S=migrate(c);log('☁️ Loaded newer cloud save.','m');_save();render();newDay()}else if(S&&lt>(c.savedAt||0))pushSave()}).catch(e=>{if(e&&e.status===404&&S)pushSave()});
+})();
+</script>
+</body></html>
