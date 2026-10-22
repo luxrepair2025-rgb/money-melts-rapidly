@@ -6,8 +6,8 @@
 header{position:sticky;top:0;z-index:5;background:#323c4aee;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 h1{font-size:18px;margin:0}h1 small{color:var(--mut);font-weight:400;font-size:12px;display:block}
 .stats{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.stats b{display:block;font-size:15px}
-main{max-width:1100px;margin:auto;padding:12px;display:grid;gap:12px;grid-template-columns:1fr}
-@media(min-width:900px){main{grid-template-columns:1.2fr 1fr}}
+main{max-width:1200px;margin:auto;padding:12px;display:grid;gap:12px;grid-template-columns:1fr}
+
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
 h2{margin:0 0 10px;font-size:15px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
 button{background:#5a6880;color:var(--txt);border:1px solid #7484a0;border-radius:8px;padding:9px 12px;font-size:14px;cursor:pointer;margin:3px 3px 0 0}
@@ -32,21 +32,42 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{c
 .toast{pointer-events:auto;cursor:pointer;background:#424d5f;border:1px solid var(--line);border-left:5px solid var(--b);border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px #0008;font-size:14px;animation:tin .25s ease-out;transition:opacity .5s,transform .5s}
 .toast.gain{border-left-color:var(--g)}.toast.loss{border-left-color:var(--r)}.toast.out{opacity:0;transform:translateY(10px)}
 @keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+nav.tabs{position:sticky;top:var(--hh,64px);z-index:4;display:flex;background:#323c4a;border-bottom:1px solid var(--line)}
+nav.tabs button{flex:1;margin:0;border:0;border-radius:0;background:none;padding:12px;font-weight:700;color:var(--mut);border-bottom:3px solid transparent}
+nav.tabs button.on{color:var(--txt);border-bottom-color:var(--b);background:#3b4656}
+.cnt{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--b);color:#041322;font-size:12px;margin-left:4px}
+.screen{display:none;gap:12px;align-items:start}.screen.on{display:grid}
+#scrAuction{grid-template-columns:1fr}@media(min-width:900px){#scrAuction{grid-template-columns:2.2fr 1fr}}
+#scrLot{grid-template-columns:1fr}@media(min-width:900px){#scrLot{grid-template-columns:1.3fr 1fr}}
+.simbar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#2c3542;margin:-14px -14px 12px;padding:9px 14px;border-radius:12px 12px 0 0;font-size:13px;font-weight:700;letter-spacing:.04em}
+.live{color:#fff;background:#d33;border-radius:5px;padding:2px 7px;font-size:11px}.live:before{content:'● ';animation:blink 1s infinite}@keyframes blink{50%{opacity:.3}}
+.vgrid{display:grid;gap:12px}@media(min-width:640px){.vgrid{grid-template-columns:1.1fr 1fr}}
+.vgrid .carimg{width:100%;margin:0}
+.prices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.prices div{background:#3e4859;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--mut)}.prices b{display:block;font-size:22px}
+.bidpanel{margin-top:12px;background:#36404f;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.bidpanel .bid{font-size:44px;line-height:1.1}.bidpanel .timer{height:12px;margin:8px 0 4px}
+.bidrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}.bidrow button{margin:0}#bidBtn{font-size:20px;padding:14px 26px;min-width:200px}
+#feed{list-style:none;margin:10px 0 0;padding:0;max-height:150px;overflow:auto;text-align:left;font-size:13px}#feed li{padding:4px 6px;border-bottom:1px dashed #3e4859}
+.runlist .rl{display:flex;gap:8px;align-items:center;padding:7px;border-radius:8px;border:1px solid transparent;font-size:13px}.runlist .rl.now{border-color:var(--y);background:#3e4859}.runlist .rl.done{opacity:.55}
+.rl .no{font-weight:800;color:var(--y);min-width:44px}
 </style></head><body><div id="toasts"></div>
 <header><h1>🔥💸 Money Melts Rapidly <span id="verHdr" style="font-size:11px;font-weight:600;color:var(--mut);border:1px solid var(--line);border-radius:6px;padding:1px 5px;vertical-align:middle"></span><small>MMR — the market value your wallet will never see again</small></h1>
 <div class="stats"><div>Day<b id="sDay"></b></div><div>Cash<b id="sCash"></b></div><div>Net P/L<b id="sPL"></b></div><div>Rep<b id="sRep"></b></div><div>Lot<b id="sLot"></b></div><div>Tier<b id="sTier"></b></div></div></header>
+<nav class="tabs"><button id="tabA" class="on" onclick="tab('A')">🔨 Auction</button><button id="tabL" onclick="tab('L')">🚗 My Lot <span class="cnt" id="lotCnt">0</span></button></nav>
 <main>
-<section class="card" id="lane"></section>
-<section><div class="card" id="career"></div><div class="card" style="margin-top:12px"><h2>Your Lot</h2><div id="lotList"></div></div>
-<div class="card" style="margin-top:12px"><h2>Ticker</h2><div id="log"></div>
-<div style="margin-top:8px"><button onclick="if(confirm('Wipe save and start over?'))newGame()">New Game</button></div></div></section>
+<div class="screen on" id="scrAuction"><section class="card" id="lane"></section>
+<aside class="card runlist"><h2>Run List</h2><div id="runList"></div></aside></div>
+<div class="screen" id="scrLot"><section><div class="card" id="career"></div><div class="card" style="margin-top:12px"><h2>Your Lot</h2><div id="lotList"></div>
+<div style="margin-top:10px"><button class="pri" onclick="endDay()">🌙 End Day ➜</button> <span class="m" style="font-size:12px">Skips any cars left in today's lane.</span></div></div></section>
+<section><div class="card"><h2>Ticker</h2><div id="log"></div>
+<div style="margin-top:8px"><button onclick="if(confirm('Wipe save and start over?'))newGame()">New Game</button></div></div></section></div>
 </main>
 <footer>Money Melts Rapidly v<span id="ver"></span> · <a href="https://github.com/luxrepair2025-rgb/money-melts-rapidly/blob/main/img/CREDITS.md" target="_blank" rel="noopener">Photo credits</a> (Wikimedia Commons)</footer>
 <div class="modal" id="modal"><div class="card" id="mbody"></div></div>
 <script>
 const $=id=>document.getElementById(id),R=Math.random,ri=(a,b)=>Math.floor(a+R()*(b-a+1)),pick=a=>a[Math.floor(R()*a.length)],$$=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
 const FEE=p=>Math.round(150+p*0.04),SLOTS=5,KEY='mmr_save_v1';
-const VERSION='0.2.4';
+const VERSION='0.3.0';
 // [tier, make, model, new price, body]
 const MODELS=[
 [1, "Toyota", "Corolla", 20000, "sedan"],
@@ -131,50 +152,55 @@ let mmr=base*Math.pow(.88,age)*(1-Math.min(.35,mi/600000));mmr=Math.round(mmr/50
 const iss=[],k=R()<.18?0:ri(1,4);const pool=[...ISSUES].sort(()=>R()-.5);for(let i=0;i<k;i++){const x={...pool[i]};x.c=Math.round(x.c*T.m);x.shown=R()<x.vis*.5;iss.push(x)}
 const gem=R()<.15?pick(GEMS):null;const grade=(Math.max(1,5-iss.reduce((a,b)=>a+b.v*6+.3,0)*.6+(gem?.5:0)+R()*.6)).toFixed(1);
 return{id:Date.now()+R(),name:`${yr} ${mk} ${md}`,tier,body,slug:slug(mk+' '+md),mi,mmr,grade,iss,gem,insp:false,detailed:false,daysOnLot:0}}
-function newDay(){cur=Array.from({length:ri(4,6)},genCar);cur.idx=0;save();render();showCar()}
+function newDay(){cur=Array.from({length:ri(4,6)},genCar);cur.forEach((c,i)=>c.lotNo=S.day*100+i+1);cur.idx=0;save();render();showCar()}
 function trueValue(c){let v=c.mmr*(c.gem?1.18:1);c.iss.forEach(i=>{if(!i.fixed)v-=i.perm?c.mmr*i.v:i.c*1.3+c.mmr*i.v*.3});if(c.detailed)v*=1.05;return Math.max(300,Math.round(v))}
 function retailOf(v){return Math.round(v*1.15*(1+(S.rep-50)/1000)/50)*50}
 function suggestedRetail(c){return retailOf(trueValue(c))}
 function estRetail(c){let v=c.mmr*(c.gem&&c.insp?1.18:1);c.iss.forEach(i=>{if(i.shown)v-=i.perm?c.mmr*i.v:i.c*1.3+c.mmr*i.v*.3});return retailOf(Math.max(300,v))}
 const SELL_DAYS=()=>S.rep>=70?2:S.rep<30?4:3;
-function showCar(){clearInterval(auc?.t);const c=cur[cur.idx];if(!c){$('lane').innerHTML=`<h2>Lane closed</h2><p>That's all the iron for today. The auctioneer has lost his voice (again).</p><button class="pri" onclick="endDay()">End Day ➜</button>`;return}
+function tab(t){$('scrAuction').classList.toggle('on',t==='A');$('scrLot').classList.toggle('on',t==='L');$('tabA').classList.toggle('on',t==='A');$('tabL').classList.toggle('on',t==='L');window.scrollTo(0,0)}
+function feed(t,c=''){const f=$('feed');if(!f)return;const li=document.createElement('li');li.className=c;li.innerHTML=t;f.prepend(li)}
+function renderRun(){if(!cur||!$('runList'))return;$('runList').innerHTML=cur.map((c,i)=>`<div class="rl ${i===cur.idx?'now':i<cur.idx?'done':''}"><span class="no">#${c.lotNo}</span><span style="flex:1">${c.name}<br><span class="m">${c.mi.toLocaleString()} mi · Gr ${c.grade} · MMR ${$$(c.mmr)}</span></span><span>${i===cur.idx?'<span class="live">LIVE</span>':c.result||''}</span></div>`).join('')}
+function updBid(){$('bid').textContent=$$(auc.price);const nx=auc.price+(auc.lead?inc():0);$('bidBtn').textContent=auc.lead==='you'?'YOU LEAD':`BID ${$$(nx)}`;$('step').textContent=`Bid step ${$$(inc())} · Buyer fee ≈ ${$$(FEE(nx))}`}
+function showCar(){clearInterval(auc?.t);const c=cur[cur.idx];if(!c){renderRun();$('lane').innerHTML=`<div class="simbar"><span>LANE 7 · SIMULCAST</span><span class="m">CLOSED</span></div><h2>Lane closed</h2><p>That's all the iron for today. The auctioneer has lost his voice (again).</p><button class="pri" onclick="endDay()">End Day ➜</button>`;return}
 const known=c.iss.filter(i=>i.shown);
-$('lane').innerHTML=`<h2>Lane 7 · Run ${cur.idx+1}/${cur.length}</h2><div class="car">${carImg(c,'carimg')}<h3>${c.name}${c.tier>S.tier?`<span class="tag">👀 Tier ${c.tier} teaser</span>`:c.tier<S.tier?'<span class="tag">🗑️ Bargain bin</span>':''}</h3>
+$('lane').innerHTML=`<div class="simbar"><span>LANE 7 · LOT #${c.lotNo} · RUN ${cur.idx+1}/${cur.length}</span><span class="live">LIVE</span></div>
+<div class="vgrid"><div>${carImg(c,'carimg')}</div><div class="car"><h3>${c.name}${c.tier>S.tier?`<span class="tag">👀 Tier ${c.tier} teaser</span>`:c.tier<S.tier?'<span class="tag">🗑️ Bargain bin</span>':''}</h3>
 <div class="row"><span>${c.mi.toLocaleString()} mi</span><span>Grade <span class="grade">${c.grade}</span></span></div>
-<div class="row" style="font-size:18px;background:#3e4859;border:1px solid var(--line);border-radius:10px;padding:10px"><span>MMR<br><b class="y" style="font-size:22px">${$$(c.mmr)}</b></span><span style="text-align:right">Suggested Retail <span class="m" style="font-size:12px">(est., visible condition)</span><br><b class="g" style="font-size:22px">${$$(estRetail(c))}</b></span></div>
-<b>Condition report</b> <span class="m">(partial, written by an optimist)</span><ul>${known.length?known.map(i=>`<li class="r">${i.n}</li>`).join(''):'<li class="m">"Runs and drives." (allegedly)</li>'}${c.gem&&c.insp?`<li class="g">💎 ${c.gem}</li>`:''}</ul>
-${c.insp?'<p class="m">🔍 Inspected.</p>':`<button onclick="inspect()">🔍 Inspection ($${150+Math.round(c.mmr*.005)})</button>`}
-<div class="bidbox"><div class="m" id="who">Starting bid</div><div class="bid" id="bid"></div><div class="timer"><i id="tm"></i></div><p class="m" id="quip">${pick(QUIPS)}</p></div>
-<button class="go" id="bidBtn" onclick="playerBid()">BID</button><button onclick="startAuction()" id="startBtn" class="pri">Start Bidding</button><button onclick="skip()">Pass ⏭</button>
-<p class="m" style="font-size:12px">Buyer fee ≈ $150 + 4%. Lot slots: ${S.lot.length}/${SLOTS}</p></div>`;
-auc={price:Math.round(c.mmr*.45/100)*100,lead:null,left:0,run:false};$('bid').textContent=$$(auc.price);$('bidBtn').disabled=true}
+<div class="prices"><div>MMR<b class="y">${$$(c.mmr)}</b></div><div>Suggested Retail<b class="g">${$$(estRetail(c))}</b>est., visible condition</div></div>
+<b>Condition report</b> <span class="m" style="font-size:12px">(partial, written by an optimist)</span><ul>${known.length?known.map(i=>`<li class="r">${i.n}</li>`).join(''):'<li class="m">"Runs and drives." (allegedly)</li>'}${c.gem&&c.insp?`<li class="g">💎 ${c.gem}</li>`:''}</ul>
+${c.insp?'<p class="m">🔍 Inspected.</p>':`<button onclick="inspect()">🔍 Inspection ($${150+Math.round(c.mmr*.005)})</button>`}</div></div>
+<div class="bidpanel"><div class="m">CURRENT BID</div><div class="bid" id="bid"></div><div id="who" class="m">Starting bid</div><div class="timer"><i id="tm" style="width:100%"></i></div><div class="m" style="font-size:12px" id="step"></div>
+<div class="bidrow"><button class="pri" onclick="startAuction()" id="startBtn">▶ Open Bidding</button><button class="go" id="bidBtn" onclick="playerBid()">BID</button><button onclick="skip()">Pass ⏭</button></div>
+<p class="m" id="quip" style="margin:8px 0 0">${pick(QUIPS)}</p><ul id="feed"></ul><p class="m" style="font-size:12px;margin:6px 0 0">Lot slots: ${S.lot.length}/${SLOTS}</p></div>`;
+auc={price:Math.round(c.mmr*.45/100)*100,lead:null,left:0,run:false};updBid();$('bidBtn').disabled=true;renderRun();feed(`Lot #${c.lotNo} on the block. Floor ${$$(auc.price)}.`,'m')}
 function inspect(){const c=cur[cur.idx],cost=150+Math.round(c.mmr*.005);if(S.cash<cost)return alert("Can't afford the clipboard guy.");S.cash-=cost;c.insp=true;c.iss.forEach(i=>{if(R()<.7)i.shown=true});log(`Paid ${$$(cost)} to inspect ${c.name}.`);render();showCar()}
 const AINAMES=["Monster Hat","Dealer #4471","Wholesale Wayne","CarMax-ish guy","Buy-Here-Pay-Here Bob","Flip-It Phil","Lot Lizard Linda"];
 function startAuction(){const c=cur[cur.idx];auc.run=true;auc.left=100;auc.tick=0;auc.pending=null;$('startBtn').disabled=true;$('bidBtn').disabled=false;
 const tv=trueValue(c),names=[...AINAMES].sort(()=>R()-.5);auc.bidders=Array.from({length:ri(2,4)},(_,k)=>({n:names[k],ceil:Math.round(tv*(.65+R()*.4)),drop:R()<.25?.4+R()*.5:2,out:false}));
 auc.ai=Math.max(...auc.bidders.map(b=>b.ceil));
-const op=auc.bidders.find(b=>b.ceil>auc.price);if(R()<.5&&op){auc.lead='ai';auc.leader=op;$('who').innerHTML=`<span class="r">${op.n}</span> opens the bidding`;}else $('who').innerHTML='Floor bid — waiting on you';
+const op=auc.bidders.find(b=>b.ceil>auc.price);if(R()<.5&&op){auc.lead='ai';auc.leader=op;$('who').innerHTML=`<span class="r">${op.n}</span> opens the bidding`;feed(`<b class="r">${op.n}</b> opens at ${$$(auc.price)}`)}else{$('who').innerHTML='Floor bid — waiting on you';feed('Bidding open — floor bid, waiting on you','m')}updBid();
 auc.t=setInterval(aucTick,100)}
 function aucTick(){auc.tick++;auc.left-=1.25;$('tm').style.width=Math.max(0,auc.left)+'%';
 if(auc.pending!==null&&auc.tick>=auc.pending){auc.pending=null;aiRespond()}
 if(auc.left<=0&&auc.pending===null)finish()}
 function aiRespond(){if(!auc.run||auc.lead!=='you')return false;const nx=auc.price+inc();
 auc.bidders.forEach(b=>{if(!b.out&&(nx>b.ceil||nx>b.ceil*b.drop)){b.out=true;}});
-const live=auc.bidders.filter(b=>!b.out);if(!live.length){$('quip').textContent='The room goes quiet… 🦗';return false}
-const b=pick(live);auc.price=nx;auc.lead='ai';auc.leader=b;$('who').innerHTML=`<span class="r">${b.n}</span> leads`;$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,30);if(R()<.3)$('quip').textContent=pick(QUIPS);return true}
+const live=auc.bidders.filter(b=>!b.out);if(!live.length){$('quip').textContent='The room goes quiet… 🦗';feed('All other bidders are out 🦗','m');return false}
+const b=pick(live);auc.price=nx;auc.lead='ai';auc.leader=b;$('who').innerHTML=`<span class="r">${b.n}</span> leads`;updBid();feed(`<b class="r">${b.n}</b> bids ${$$(auc.price)}`);auc.left=Math.max(auc.left,30);if(R()<.3)$('quip').textContent=pick(QUIPS);return true}
 function inc(){return auc.price<5000?100:auc.price<15000?250:500}
-function playerBid(){if(!auc.run)return;const nx=auc.price+(auc.lead?inc():0);if(nx+FEE(nx)>S.cash)return flash("Insufficient funds. The bank laughed.");auc.price=nx;auc.lead='you';$('who').innerHTML='<span class="g">YOU</span> lead';$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,44);auc.pending=auc.tick+ri(5,25)}
+function playerBid(){if(!auc.run)return;const nx=auc.price+(auc.lead?inc():0);if(nx+FEE(nx)>S.cash)return flash("Insufficient funds. The bank laughed.");auc.price=nx;auc.lead='you';$('who').innerHTML='<span class="g">YOU</span> lead';updBid();feed(`<b class="g">YOU</b> bid ${$$(auc.price)}`);auc.left=Math.max(auc.left,44);auc.pending=auc.tick+ri(5,25)}
 function flash(t){$('quip').innerHTML=`<span class="r">${t}</span>`}
-function finish(){clearInterval(auc.t);auc.run=false;const c=cur[cur.idx];
+function finish(){clearInterval(auc.t);auc.run=false;const c=cur[cur.idx];c.result=auc.lead==='you'?'✅ You':auc.lead==='ai'?'Sold':'No-sale';
 if(auc.lead==='you'){if(S.lot.length>=SLOTS){log(`Won ${c.name} but your lot is full — sold back at a $300 penalty.`,'r');S.cash-=300;S.pl-=300}else{const fee=FEE(auc.price);c.cost=auc.price+fee;S.cash-=c.cost;S.bought++;S.lot.push(c);
 c.iss.forEach(i=>{i.revealed=true;if(i.chance&&R()<.4){i.c*=2.5;i.n+=" (worse than it looked)"}});
 log(`🔨 SOLD to you: ${c.name} for ${$$(auc.price)} + ${$$(fee)} fee.`,'g');reveal(c)}}
 else if(auc.lead==='ai')log(`${c.name} went to someone else for ${$$(auc.price)}. Dodged a bullet? Or a gem?`,'m');else log(`${c.name} no-saled. Even the seller gave up.`,'m');
 cur.idx++;save();render();if(!$('modal').classList.contains('on'))showCar()}
-function skip(){clearInterval(auc.t);cur.idx++;showCar()}
+function skip(){clearInterval(auc.t);if(cur[cur.idx])cur[cur.idx].result='Passed';cur.idx++;showCar()}
 function reveal(c){const ns=c.iss.filter(i=>!i.shown);modal(`<h2>🚗 Post-Sale Reveal</h2><h3>${c.name}</h3>
 ${c.gem?`<p class="g">💎 GEM: ${c.gem}</p>`:''}${c.iss.length?'<ul>'+c.iss.map(i=>`<li>${i.shown?'':'🆕 '}<b>${i.n}</b> — ${i.perm?'<span class="r">permanent value hit</span>':'repair '+$$(i.c)}<br><span class="m">${i.o}</span></li>`).join('')+'</ul>':'<p class="g">Clean as a whistle. Suspiciously clean.</p>'}
-<p>${ns.length?`<span class="r">${ns.length} surprise(s)</span> the report forgot.`:'No surprises!'} Suggested Retail now: <b class="y">${$$(suggestedRetail(c))}</b> (paid ${$$(c.cost)})</p><button class="pri" onclick="closeM();showCar()">To the lot</button>`)}
+<p>${ns.length?`<span class="r">${ns.length} surprise(s)</span> the report forgot.`:'No surprises!'} Suggested Retail now: <b class="y">${$$(suggestedRetail(c))}</b> (paid ${$$(c.cost)})</p><button class="pri" onclick="closeM();showCar()">Keep bidding</button><button onclick="closeM();showCar();tab('L')">View My Lot</button>`)}
 function modal(h){$('mbody').innerHTML=h;$('modal').classList.add('on')}function closeM(){$('modal').classList.remove('on');render()}
 function repair(id){const c=S.lot.find(x=>x.id==id),todo=c.iss.filter(i=>!i.fixed&&!i.perm);let tot=todo.reduce((a,i)=>a+i.c,0);if(!tot)return;if(S.cash<tot)return alert("Mechanic wants cash, not vibes.");S.cash-=tot;c.cost+=tot;
 let msg=`Repaired ${c.name} for ${$$(tot)}.`;todo.forEach(i=>i.fixed=true);if(R()<.15){const x=pick(ISSUES.filter(i=>!i.perm));c.iss.push({...x,c:Math.round(x.c*tm(c)),revealed:true});msg+=` While in there, they found: ${x.n}. 🙃`}log(msg,'y');save();render()}
@@ -194,7 +220,7 @@ S.lot.forEach(c=>{c.daysOnLot++;if(c.daysOnLot>6&&!c.listed)c.mmr=Math.round(c.m
 S.lot.filter(c=>c.listed).forEach(c=>{c.listDays=(c.listDays||0)+1;if(c.listDays>=SELL_DAYS())sell(c,suggestedRetail(c),'retail')});
 if(S.cash<0&&S.lot.length===0||S.cash<-3000){save();return gameOver()}newDay()}
 function gameOver(){modal(`<h2>💀 Bankrupt</h2><p>Your money melted. Rapidly. As foretold.</p><p>Days survived: ${S.day}<br>Cars bought: ${S.bought} · sold: ${S.sold}<br>Net P/L: ${$$(S.pl)}</p><button class="pri" onclick="closeM();newGame()">Try Again</button>`);localStorage.removeItem(KEY)}
-function render(){$('sDay').textContent=S.day;$('sCash').innerHTML=`<span class="${S.cash<0?'r':'g'}">${$$(S.cash)}</span>`;$('sPL').innerHTML=`<span class="${S.pl<0?'r':'g'}">${$$(S.pl)}</span>`;$('sRep').textContent=S.rep+(S.rep>70?' 😇':S.rep<30?' 🤡':'');$('sLot').textContent=S.lot.length+'/'+SLOTS;$('sTier').textContent=TIERS[S.tier-1].e+' '+S.tier;$('ver').textContent=VERSION;$('verHdr').textContent='v'+VERSION;renderCareer();
+function render(){$('sDay').textContent=S.day;$('sCash').innerHTML=`<span class="${S.cash<0?'r':'g'}">${$$(S.cash)}</span>`;$('sPL').innerHTML=`<span class="${S.pl<0?'r':'g'}">${$$(S.pl)}</span>`;$('sRep').textContent=S.rep+(S.rep>70?' 😇':S.rep<30?' 🤡':'');$('sLot').textContent=S.lot.length+'/'+SLOTS;$('sTier').textContent=TIERS[S.tier-1].e+' '+S.tier;$('ver').textContent=VERSION;$('verHdr').textContent='v'+VERSION;$('lotCnt').textContent=S.lot.length;renderCareer();
 $('lotList').innerHTML=S.lot.length?S.lot.map(c=>{const fix=c.iss.filter(i=>!i.fixed&&!i.perm).reduce((a,i)=>a+i.c,0),tv=trueValue(c);
 return`<div class="lot">${carImg(c,'thumb')}<b>${c.name}</b> <span class="m">· ${c.daysOnLot}d on lot</span>${c.gem?' 💎':''}<div class="row"><span>Into it: ${$$(c.cost)}</span></div><div class="row"><span>MMR <b class="y">${$$(c.mmr)}</b></span><span>Suggested Retail <b class="${suggestedRetail(c)>c.cost?'g':'r'}">${$$(suggestedRetail(c))}</b></span></div>
 <div class="m" style="font-size:12px">${c.iss.map(i=>`${i.fixed?'✅':i.perm?'⛔':'🔧'} ${i.n}`).join('<br>')||'No known issues'}</div>
@@ -207,7 +233,8 @@ function prog(){const n=nextReq();if(!n)return 1;return(Math.min(1,Math.max(0,S.
 function checkTier(){let n;while((n=nextReq())&&S.pl>=n.pl&&S.sold>=n.sold&&S.rep>=n.rep){S.tier++;log(`🎉 TIER ${S.tier} UNLOCKED: ${n.e} ${n.n}! ${n.quip} Rent and repair bills just got promoted too.`,'y')}}
 function renderCareer(){const T=TIERS[S.tier-1],n=nextReq(),p=Math.round(prog()*100);
 $('career').innerHTML=`<h2>Career</h2><b>${T.e} Tier ${S.tier}: ${T.n}</b> <span class="m">· ${T.quip}</span>`+(n?`<div class="pbar"><i style="width:${p}%"></i></div><div class="m" style="font-size:12px">Next: ${n.e} ${n.n} (${p}%) — need net P/L ${$$(Math.max(0,S.pl))}/${$$(n.pl)} · sold ${S.sold}/${n.sold} · rep ${S.rep}/${n.rep}</div>`:'<p class="g">Top tier. The money now melts at supercar speed.</p>')}
-function migrate(s){if(!s)return s;s.tier=s.tier||1;(s.lot||[]).forEach(c=>{if(!c.slug){const nm=c.name.replace(/^\d{4} /,''),m=MODELS.find(x=>`${x[1]} ${x[2]}`===nm);c.slug=slug(nm);c.body=m?m[4]:'sedan';c.tier=m?m[0]:1}});if(s.v!==VERSION){s.v=VERSION;s.log=s.log||[];s.log.unshift(`<span class="y">Updated to v${VERSION}: car photos and tiers. Your beaters survived the update.</span>`)}const t=s.tier;s.tier=1;S=s;checkTier();S.tier=Math.max(S.tier,t);return S}
+function migrate(s){if(!s)return s;s.tier=s.tier||1;(s.lot||[]).forEach(c=>{if(!c.slug){const nm=c.name.replace(/^\d{4} /,''),m=MODELS.find(x=>`${x[1]} ${x[2]}`===nm);c.slug=slug(nm);c.body=m?m[4]:'sedan';c.tier=m?m[0]:1}});if(s.v!==VERSION){s.v=VERSION;s.log=s.log||[];s.log.unshift(`<span class="y">Updated to v${VERSION}: new simulcast lane + My Lot tab. Your beaters survived the update.</span>`)}const t=s.tier;s.tier=1;S=s;checkTier();S.tier=Math.max(S.tier,t);return S}
+const setHH=()=>document.documentElement.style.setProperty('--hh',document.querySelector('header').offsetHeight+'px');addEventListener('resize',setHH);setTimeout(setHH,0);setTimeout(setHH,500);
 try{S=migrate(JSON.parse(localStorage.getItem(KEY)))}catch(e){S=null}if(S){render();newDay()}else newGame();
 </script>
 <script>
