@@ -1,35 +1,35 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Money Melts Rapidly</title>
 <style>
-:root{--bg:#0e1116;--card:#171c24;--line:#2a3240;--txt:#e6ebf2;--mut:#8a96a8;--g:#3ddc84;--r:#ff5c5c;--y:#ffc94d;--b:#4da3ff}
+:root{--bg:#3b4656;--card:#4a5668;--line:#66758c;--txt:#f4f7fb;--mut:#cdd5e1;--g:#5ff2a0;--r:#ff8a8a;--y:#ffd666;--b:#4da3ff}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
-header{position:sticky;top:0;z-index:5;background:#0b0e13ee;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+header{position:sticky;top:0;z-index:5;background:#323c4aee;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 h1{font-size:18px;margin:0}h1 small{color:var(--mut);font-weight:400;font-size:12px;display:block}
 .stats{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.stats b{display:block;font-size:15px}
 main{max-width:1100px;margin:auto;padding:12px;display:grid;gap:12px;grid-template-columns:1fr}
 @media(min-width:900px){main{grid-template-columns:1.2fr 1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
 h2{margin:0 0 10px;font-size:15px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
-button{background:#24303f;color:var(--txt);border:1px solid #34445a;border-radius:8px;padding:9px 12px;font-size:14px;cursor:pointer;margin:3px 3px 0 0}
-button:hover{background:#2d3c50}button:disabled{opacity:.4;cursor:default}
+button{background:#5a6880;color:var(--txt);border:1px solid #7484a0;border-radius:8px;padding:9px 12px;font-size:14px;cursor:pointer;margin:3px 3px 0 0}
+button:hover{background:#67768f}button:disabled{opacity:.4;cursor:default}
 .pri{background:var(--b);border-color:var(--b);color:#041322;font-weight:700}.go{background:var(--g);border-color:var(--g);color:#032;font-weight:700}.bad{background:#4a1f24;border-color:#7a2e36}
 .g{color:var(--g)}.r{color:var(--r)}.y{color:var(--y)}.m{color:var(--mut)}
-.car h3{margin:0;font-size:20px}.grade{display:inline-block;padding:2px 8px;border-radius:6px;background:#263243;font-weight:700}
+.car h3{margin:0;font-size:20px}.grade{display:inline-block;padding:2px 8px;border-radius:6px;background:#3b4658;font-weight:700}
 .row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:6px 0}
-.bidbox{text-align:center;margin:12px 0}.bid{font-size:34px;font-weight:800}.timer{height:8px;background:#222b37;border-radius:6px;overflow:hidden}.timer i{display:block;height:100%;background:var(--y);transition:width .1s linear}
+.bidbox{text-align:center;margin:12px 0}.bid{font-size:34px;font-weight:800}.timer{height:8px;background:#3e4859;border-radius:6px;overflow:hidden}.timer i{display:block;height:100%;background:var(--y);transition:width .1s linear}
 ul{margin:6px 0;padding-left:18px}li{margin:3px 0}
 .lot{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
-#log{max-height:260px;overflow:auto;font-size:13px}#log div{padding:4px 0;border-bottom:1px dashed #222b37}
+#log{max-height:260px;overflow:auto;font-size:13px}#log div{padding:4px 0;border-bottom:1px dashed #3e4859}
 .modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:9;padding:14px}.modal.on{display:flex}
 .modal .card{max-width:480px;width:100%}
-.carimg{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;background:#0b0e13;display:block;margin:4px 0 8px}
-.thumb{width:96px;height:60px;object-fit:cover;border-radius:6px;background:#0b0e13;float:left;margin:0 10px 6px 0}
+.carimg{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;background:#36404f;display:block;margin:4px 0 8px}
+.thumb{width:96px;height:60px;object-fit:cover;border-radius:6px;background:#36404f;float:left;margin:0 10px 6px 0}
 .lot::after{content:"";display:block;clear:both}
 .tag{font-size:12px;padding:2px 6px;border-radius:6px;background:#3a2f12;color:var(--y);margin-left:6px}
-.pbar{height:10px;background:#222b37;border-radius:6px;overflow:hidden;margin:6px 0}.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--g))}
+.pbar{height:10px;background:#3e4859;border-radius:6px;overflow:hidden;margin:6px 0}.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--g))}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{color:var(--mut)}
 #toasts{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:20;display:flex;flex-direction:column-reverse;gap:8px;width:min(92vw,420px);pointer-events:none}
-.toast{pointer-events:auto;cursor:pointer;background:#1b222d;border:1px solid var(--line);border-left:5px solid var(--b);border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px #0008;font-size:14px;animation:tin .25s ease-out;transition:opacity .5s,transform .5s}
+.toast{pointer-events:auto;cursor:pointer;background:#424d5f;border:1px solid var(--line);border-left:5px solid var(--b);border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px #0008;font-size:14px;animation:tin .25s ease-out;transition:opacity .5s,transform .5s}
 .toast.gain{border-left-color:var(--g)}.toast.loss{border-left-color:var(--r)}.toast.out{opacity:0;transform:translateY(10px)}
 @keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 </style></head><body><div id="toasts"></div>
@@ -100,9 +100,9 @@ const TIERS=[
 {n:"Exotics",e:"🦄",age:[1,10],m:5,pl:350000,sold:55,rep:75,quip:"An oil change costs a mortgage payment. Welcome."}];
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const SIL={sedan:"M20 70 L40 70 L60 45 L130 42 L165 58 L210 62 L215 78 L20 80Z",coupe:"M15 74 L50 66 L85 46 L135 46 L175 62 L222 66 L225 80 L15 82Z",exotic:"M10 78 L60 66 L100 50 L145 50 L190 64 L230 70 L232 82 L10 84Z",suv:"M20 78 L22 50 L45 30 L160 30 L180 52 L215 58 L218 80Z",van:"M20 80 L20 38 L50 26 L190 26 L208 50 L215 60 L215 80Z",truck:"M15 80 L15 56 L80 56 L85 30 L130 30 L145 54 L225 56 L225 80Z",hatch:"M20 78 L25 52 L60 34 L150 34 L185 56 L215 62 L215 80Z",wagon:"M18 78 L20 52 L55 38 L175 36 L190 56 L218 62 L218 80Z"};
-const svgCar=(b,col)=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 110"><rect width="240" height="110" fill="#11161d"/><path d="${SIL[b]||SIL.sedan}" fill="${col}"/><circle cx="62" cy="82" r="13" fill="#0b0e13" stroke="#8a96a8" stroke-width="4"/><circle cx="180" cy="82" r="13" fill="#0b0e13" stroke="#8a96a8" stroke-width="4"/></svg>`);
+const svgCar=(b,col)=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 110"><rect width="240" height="110" fill="#3e4859"/><path d="${SIL[b]||SIL.sedan}" fill="${col}"/><circle cx="62" cy="82" r="13" fill="#36404f" stroke="#cdd5e1" stroke-width="4"/><circle cx="180" cy="82" r="13" fill="#36404f" stroke="#cdd5e1" stroke-width="4"/></svg>`);
 const carSrc=c=>PHOTOS.has(c.slug)?`img/${c.slug}.jpg`:svgCar(c.body,['#ffc94d','#4da3ff','#ff5c5c','#3ddc84','#c58cff'][(c.tier||1)-1]);
-const carImg=(c,cls)=>`<img class="${cls}" src="${carSrc(c)}" alt="${c.name}" loading="lazy" onerror="this.onerror=null;this.src=svgCar('${c.body||'sedan'}','#8a96a8')">`;
+const carImg=(c,cls)=>`<img class="${cls}" src="${carSrc(c)}" alt="${c.name}" loading="lazy" onerror="this.onerror=null;this.src=svgCar('${c.body||'sedan'}','#cdd5e1')">`;
 const tm=c=>TIERS[(c.tier||1)-1].m;
 const ISSUES=[
 {n:"Check engine light… it was the gas cap",c:15,v:0,o:"lol. $15 gas cap. You're a genius.",vis:.7},
@@ -141,7 +141,7 @@ function showCar(){clearInterval(auc?.t);const c=cur[cur.idx];if(!c){$('lane').i
 const known=c.iss.filter(i=>i.shown);
 $('lane').innerHTML=`<h2>Lane 7 · Run ${cur.idx+1}/${cur.length}</h2><div class="car">${carImg(c,'carimg')}<h3>${c.name}${c.tier>S.tier?`<span class="tag">👀 Tier ${c.tier} teaser</span>`:c.tier<S.tier?'<span class="tag">🗑️ Bargain bin</span>':''}</h3>
 <div class="row"><span>${c.mi.toLocaleString()} mi</span><span>Grade <span class="grade">${c.grade}</span></span></div>
-<div class="row" style="font-size:18px;background:#10151c;border:1px solid var(--line);border-radius:10px;padding:10px"><span>MMR<br><b class="y" style="font-size:22px">${$$(c.mmr)}</b></span><span style="text-align:right">Suggested Retail <span class="m" style="font-size:12px">(est., visible condition)</span><br><b class="g" style="font-size:22px">${$$(estRetail(c))}</b></span></div>
+<div class="row" style="font-size:18px;background:#3e4859;border:1px solid var(--line);border-radius:10px;padding:10px"><span>MMR<br><b class="y" style="font-size:22px">${$$(c.mmr)}</b></span><span style="text-align:right">Suggested Retail <span class="m" style="font-size:12px">(est., visible condition)</span><br><b class="g" style="font-size:22px">${$$(estRetail(c))}</b></span></div>
 <b>Condition report</b> <span class="m">(partial, written by an optimist)</span><ul>${known.length?known.map(i=>`<li class="r">${i.n}</li>`).join(''):'<li class="m">"Runs and drives." (allegedly)</li>'}${c.gem&&c.insp?`<li class="g">💎 ${c.gem}</li>`:''}</ul>
 ${c.insp?'<p class="m">🔍 Inspected.</p>':`<button onclick="inspect()">🔍 Inspection ($${150+Math.round(c.mmr*.005)})</button>`}
 <div class="bidbox"><div class="m" id="who">Starting bid</div><div class="bid" id="bid"></div><div class="timer"><i id="tm"></i></div><p class="m" id="quip">${pick(QUIPS)}</p></div>
