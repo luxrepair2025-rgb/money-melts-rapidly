@@ -277,7 +277,7 @@ window.mmrLB=async function(m,p){lbM=m||lbM;lbP=p||lbP;const tabs=MET.map(([k,l]
   const body=rows.length?`<table style="width:100%;border-collapse:collapse;margin-top:8px">${rows.map((x,i)=>`<tr style="${x.playerId===me?'color:#ffc94d;font-weight:bold':''}"><td>${x.rank||i+1}</td><td>${esc(x.name||'Anonymous')}</td><td style="text-align:right">${fmt(x.value??x[lbM])}</td></tr>`).join('')}</table>`:'<p class="m">No scores yet. Go lose some money.</p>';
   if(lbM===m||1)modal(head+body+foot)}catch(e){modal(head+'<p class="m">📴 Leaderboard is offline right now. Your game still saves locally.</p>'+foot)}};
 // UI button
-const sb=document.querySelector('header .stats');if(sb)sb.insertAdjacentHTML('afterend','<div style="text-align:right;margin-top:6px"><button onclick="mmrLB()">🏆 Leaderboard</button> <span class="m" style="font-size:11px">v'+VERSION+'</span></div>');
+const sb=document.querySelector('header .stats');if(sb)sb.insertAdjacentHTML('afterend','<div style="text-align:right;margin-top:6px"><button onclick="mmrLB()">🏆 Leaderboard</button></div>');
 // startup: session_start + cloud load (prefer newer)
 track('session_start');
 api('/saves').then(r=>{const c=r&&r.data;if(!c||c.over||!c.day)return;const lt=(S&&S.savedAt)||0;
