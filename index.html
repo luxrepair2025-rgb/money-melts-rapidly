@@ -28,7 +28,11 @@ ul{margin:6px 0;padding-left:18px}li{margin:3px 0}
 .tag{font-size:12px;padding:2px 6px;border-radius:6px;background:#3a2f12;color:var(--y);margin-left:6px}
 .pbar{height:10px;background:#222b37;border-radius:6px;overflow:hidden;margin:6px 0}.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--g))}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{color:var(--mut)}
-</style></head><body>
+#toasts{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:20;display:flex;flex-direction:column-reverse;gap:8px;width:min(92vw,420px);pointer-events:none}
+.toast{pointer-events:auto;cursor:pointer;background:#1b222d;border:1px solid var(--line);border-left:5px solid var(--b);border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px #0008;font-size:14px;animation:tin .25s ease-out;transition:opacity .5s,transform .5s}
+.toast.gain{border-left-color:var(--g)}.toast.loss{border-left-color:var(--r)}.toast.out{opacity:0;transform:translateY(10px)}
+@keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+</style></head><body><div id="toasts"></div>
 <header><h1>🔥💸 Money Melts Rapidly<small>MMR — the market value your wallet will never see again</small></h1>
 <div class="stats"><div>Day<b id="sDay"></b></div><div>Cash<b id="sCash"></b></div><div>Net P/L<b id="sPL"></b></div><div>Rep<b id="sRep"></b></div><div>Lot<b id="sLot"></b></div><div>Tier<b id="sTier"></b></div></div></header>
 <main>
@@ -42,7 +46,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}footer a{c
 <script>
 const $=id=>document.getElementById(id),R=Math.random,ri=(a,b)=>Math.floor(a+R()*(b-a+1)),pick=a=>a[Math.floor(R()*a.length)],$$=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
 const FEE=p=>Math.round(150+p*0.04),SLOTS=5,KEY='mmr_save_v1';
-const VERSION='0.2.2';
+const VERSION='0.2.3';
 // [tier, make, model, new price, body]
 const MODELS=[
 [1, "Toyota", "Corolla", 20000, "sedan"],
@@ -177,8 +181,12 @@ let msg=`Repaired ${c.name} for ${$$(tot)}.`;todo.forEach(i=>i.fixed=true);if(R(
 const DET=c=>Math.round(250*tm(c));
 function detail(id){const c=S.lot.find(x=>x.id==id),d=DET(c);if(c.detailed||S.cash<d)return;S.cash-=d;c.cost+=d;c.detailed=true;log(`Detailed ${c.name}. Armor All everywhere. Even the pedals.`);save();render()}
 function listRetail(id){const c=S.lot.find(x=>x.id==id);c.listed=!c.listed;c.listDays=0;log(c.listed?`Listed ${c.name} at ${$$(suggestedRetail(c))}. Balloons tied to the mirrors.`:`Pulled ${c.name} off the front line.`);save();render()}
+function showToast(html,kind='',ms=4500){const t=document.createElement('div');t.className='toast '+kind;t.innerHTML=html;const box=$('toasts');box.appendChild(t);while(box.children.length>5)box.firstChild.remove();
+const kill=()=>{if(t.dataset.k)return;t.dataset.k=1;t.classList.add('out');setTimeout(()=>t.remove(),500)};t.onclick=kill;setTimeout(kill,ms);return t}
+const WIN_LINES=["Cha-ching! Buy the team donuts.","You're basically a car whisperer.","Money un-melted. For now.","The flip gods smile upon you."],LOSE_LINES=["Money Melts Rapidly™, as advertised.","That one's going in the 'learning experience' folder.","Your accountant just sighed audibly.","At least it's off the lot?"];
 function sell(c,amt,how){S.cash+=amt;const p=amt-c.cost;S.pl+=p;S.sold++;S.lot=S.lot.filter(x=>x!==c);
 const hidden=c.iss.filter(i=>!i.fixed&&!i.perm&&i.c>500).length;if(how==='retail'){S.rep=Math.max(0,Math.min(100,S.rep+(hidden?-6*hidden:3)));if(hidden)log(`Buyer discovered unfixed problems. Yelp review: ⭐ "Never again."`,'r')}
+showToast(`<b>${how==='retail'?'🤝 Retail sale':'🔁 Auction result'}</b> · ${c.name}<br>Sold for ${$$(amt)} · <b class="${p>=0?'g':'r'}">${p>=0?'+':''}${$$(p)}</b><br><span class="m">${pick(p>=0?WIN_LINES:LOSE_LINES)}</span>`,p>=0?'gain':'loss');
 checkTier();log(`${how==='retail'?'🤝 Retail sold':'🔁 Ran back'} ${c.name} for ${$$(amt)} → ${p>=0?'<span class="g">+':'<span class="r">'}${$$(p)}</span>`);save();render()}
 function runBack(id){const c=S.lot.find(x=>x.id==id),amt=Math.round(trueValue(c)*(.72+R()*.2)/50)*50,fee=FEE(amt)*.6|0;sell(c,amt-fee,'auction')}
 function endDay(){S.day++;const m=TIERS[S.tier-1].m,rent=Math.round(200*m+S.lot.reduce((a,c)=>a+40*tm(c),0));S.cash-=rent;log(`Lot rent & insurance: ${$$(rent)}.`,'m');
