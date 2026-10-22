@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Money Melts Rapidly</title>
+<style>
+:root{--bg:#0e1116;--card:#171c24;--line:#2a3240;--txt:#e6ebf2;--mut:#8a96a8;--g:#3ddc84;--r:#ff5c5c;--y:#ffc94d;--b:#4da3ff}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+header{position:sticky;top:0;z-index:5;background:#0b0e13ee;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:18px;margin:0}h1 small{color:var(--mut);font-weight:400;font-size:12px;display:block}
+.stats{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.stats b{display:block;font-size:15px}
+main{max-width:1100px;margin:auto;padding:12px;display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:900px){main{grid-template-columns:1.2fr 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+h2{margin:0 0 10px;font-size:15px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+button{background:#24303f;color:var(--txt);border:1px solid #34445a;border-radius:8px;padding:9px 12px;font-size:14px;cursor:pointer;margin:3px 3px 0 0}
+button:hover{background:#2d3c50}button:disabled{opacity:.4;cursor:default}
+.pri{background:var(--b);border-color:var(--b);color:#041322;font-weight:700}.go{background:var(--g);border-color:var(--g);color:#032;font-weight:700}.bad{background:#4a1f24;border-color:#7a2e36}
+.g{color:var(--g)}.r{color:var(--r)}.y{color:var(--y)}.m{color:var(--mut)}
+.car h3{margin:0;font-size:20px}.grade{display:inline-block;padding:2px 8px;border-radius:6px;background:#263243;font-weight:700}
+.row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:6px 0}
+.bidbox{text-align:center;margin:12px 0}.bid{font-size:34px;font-weight:800}.timer{height:8px;background:#222b37;border-radius:6px;overflow:hidden}.timer i{display:block;height:100%;background:var(--y);transition:width .1s linear}
+ul{margin:6px 0;padding-left:18px}li{margin:3px 0}
+.lot{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
+#log{max-height:260px;overflow:auto;font-size:13px}#log div{padding:4px 0;border-bottom:1px dashed #222b37}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:9;padding:14px}.modal.on{display:flex}
+.modal .card{max-width:480px;width:100%}
+</style></head><body>
+<header><h1>🔥💸 Money Melts Rapidly<small>MMR — the market value your wallet will never see again</small></h1>
+<div class="stats"><div>Day<b id="sDay"></b></div><div>Cash<b id="sCash"></b></div><div>Net P/L<b id="sPL"></b></div><div>Rep<b id="sRep"></b></div><div>Lot<b id="sLot"></b></div></div></header>
+<main>
+<section class="card" id="lane"></section>
+<section><div class="card"><h2>Your Lot</h2><div id="lotList"></div></div>
+<div class="card" style="margin-top:12px"><h2>Ticker</h2><div id="log"></div>
+<div style="margin-top:8px"><button onclick="if(confirm('Wipe save and start over?'))newGame()">New Game</button></div></div></section>
+</main>
+<div class="modal" id="modal"><div class="card" id="mbody"></div></div>
+<script>
+const $=id=>document.getElementById(id),R=Math.random,ri=(a,b)=>Math.floor(a+R()*(b-a+1)),pick=a=>a[Math.floor(R()*a.length)],$$=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
+const FEE=p=>Math.round(150+p*0.04),SLOTS=5,KEY='mmr_save_v1';
+const MODELS=[["Toyota","Camry",26000],["Honda","Civic",23000],["Ford","F-150",42000],["Chevy","Silverado",40000],["Nissan","Altima",22000],["BMW","3 Series",38000],["Jeep","Wrangler",36000],["Subaru","Outback",30000],["Dodge","Charger",33000],["Kia","Soul",19000],["Hyundai","Elantra",20000],["Mercedes","C300",41000],["Tesla","Model 3",39000],["Mini","Cooper",24000],["Ram","1500",41000],["VW","Jetta",21000]];
+const ISSUES=[
+{n:"Check engine light… it was the gas cap",c:15,v:0,o:"lol. $15 gas cap. You're a genius.",vis:.7},
+{n:"Engine knock (rod bearing says hi)",c:4500,v:.35,o:"Sounds like a drum solo. Wallet is the drum.",vis:.4},
+{n:"Transmission slip 2→3",c:3200,v:.25,o:"Shifts like it's thinking about its life choices.",vis:.45},
+{n:"Frame damage (prior repair, crooked)",c:0,v:.3,o:"Drives sideways like a crab. Can't fix, only discount.",vis:.6,perm:1},
+{n:"Flood car (smells like a lake)",c:0,v:.45,o:"Comes with complimentary pond life.",vis:.55,perm:1},
+{n:"Worn brakes & rotors",c:650,v:.05,o:"Stopping is more of a suggestion.",vis:.8},
+{n:"Tires bald as a bowling ball",c:700,v:.05,o:"Racing slicks, technically.",vis:.9},
+{n:"A/C blows hot air",c:1100,v:.06,o:"Free sauna mode.",vis:.6},
+{n:"Head gasket leak",c:2400,v:.2,o:"White smoke = new pope? No. Bad news.",vis:.35},
+{n:"Mystery electrical gremlins",c:900,v:.08,o:"Wipers activate when you say 'hello'.",vis:.3,chance:1},
+{n:"Previous owner's smoking habit",c:350,v:.04,o:"Interior is 40% ash by volume.",vis:.85},
+{n:"Missing second key",c:300,v:.02,o:"The fob is somewhere in Ohio.",vis:.95},
+{n:"Catalytic converter stolen",c:1800,v:.12,o:"Sounds like a monster truck now.",vis:.7},
+{n:"Rust in rockers",c:1200,v:.08,o:"Structural flakiness.",vis:.7}];
+const GEMS=["Grandma-owned, garage kept 🧓","Fresh timing belt + full service records","Rare factory color, collectors drool","Previous owner was a detailing addict"];
+const QUIPS=["Auctioneer: 'Doyahearfive-fivefive-who'llgimmesix?!'","A guy in a Monster Energy hat is staring you down.","Someone's dealer rep is on FaceTime bidding for 3 stores.","Lane smells like burnt clutch and coffee.","The floor man is yelling 'HEY!' at no one."];
+let S,cur,auc;
+function newGame(){S={day:1,cash:25000,rep:50,pl:0,bought:0,sold:0,lot:[],log:[]};log("Welcome to the lane. Remember: MMR stands for Money Melts Rapidly.");newDay();}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function log(t,c=''){S.log.unshift(`<span class="${c}">D${S.day}: ${t}</span>`);S.log=S.log.slice(0,60)}
+function genCar(){const [mk,md,base]=pick(MODELS),age=ri(1,15),yr=2026-age,mi=Math.max(800,Math.round((age*ri(8,16)*1000+ri(-5000,5000))/100)*100);
+let mmr=base*Math.pow(.88,age)*(1-Math.min(.35,mi/600000));mmr=Math.round(mmr/50)*50;
+const iss=[],k=R()<.18?0:ri(1,4);const pool=[...ISSUES].sort(()=>R()-.5);for(let i=0;i<k;i++){const x={...pool[i]};x.shown=R()<x.vis*.5;iss.push(x)}
+const gem=R()<.15?pick(GEMS):null;const grade=(Math.max(1,5-iss.reduce((a,b)=>a+b.v*6+.3,0)*.6+(gem?.5:0)+R()*.6)).toFixed(1);
+return{id:Date.now()+R(),name:`${yr} ${mk} ${md}`,mi,mmr,grade,iss,gem,insp:false,detailed:false,daysOnLot:0}}
+function newDay(){cur=Array.from({length:ri(4,6)},genCar);cur.idx=0;save();render();showCar()}
+function trueValue(c){let v=c.mmr*(c.gem?1.18:1);c.iss.forEach(i=>{if(!i.fixed)v-=i.perm?c.mmr*i.v:i.c*1.3+c.mmr*i.v*.3});if(c.detailed)v*=1.05;return Math.max(300,Math.round(v))}
+function showCar(){clearInterval(auc?.t);const c=cur[cur.idx];if(!c){$('lane').innerHTML=`<h2>Lane closed</h2><p>That's all the iron for today. The auctioneer has lost his voice (again).</p><button class="pri" onclick="endDay()">End Day ➜</button>`;return}
+const known=c.iss.filter(i=>i.shown);
+$('lane').innerHTML=`<h2>Lane 7 · Run ${cur.idx+1}/${cur.length}</h2><div class="car"><h3>${c.name}</h3>
+<div class="row"><span>${c.mi.toLocaleString()} mi</span><span>Grade <span class="grade">${c.grade}</span></span><span>MMR <b class="y">${$$(c.mmr)}</b></span></div>
+<b>Condition report</b> <span class="m">(partial, written by an optimist)</span><ul>${known.length?known.map(i=>`<li class="r">${i.n}</li>`).join(''):'<li class="m">"Runs and drives." (allegedly)</li>'}${c.gem&&c.insp?`<li class="g">💎 ${c.gem}</li>`:''}</ul>
+${c.insp?'<p class="m">🔍 Inspected.</p>':`<button onclick="inspect()">🔍 Inspection ($${150+Math.round(c.mmr*.005)})</button>`}
+<div class="bidbox"><div class="m" id="who">Starting bid</div><div class="bid" id="bid"></div><div class="timer"><i id="tm"></i></div><p class="m" id="quip">${pick(QUIPS)}</p></div>
+<button class="go" id="bidBtn" onclick="playerBid()">BID</button><button onclick="startAuction()" id="startBtn" class="pri">Start Bidding</button><button onclick="skip()">Pass ⏭</button>
+<p class="m" style="font-size:12px">Buyer fee ≈ $150 + 4%. Lot slots: ${S.lot.length}/${SLOTS}</p></div>`;
+auc={price:Math.round(c.mmr*.45/100)*100,lead:null,left:0,run:false};$('bid').textContent=$$(auc.price);$('bidBtn').disabled=true}
+function inspect(){const c=cur[cur.idx],cost=150+Math.round(c.mmr*.005);if(S.cash<cost)return alert("Can't afford the clipboard guy.");S.cash-=cost;c.insp=true;c.iss.forEach(i=>{if(R()<.7)i.shown=true});log(`Paid ${$$(cost)} to inspect ${c.name}.`);render();showCar()}
+function startAuction(){const c=cur[cur.idx];auc.run=true;auc.left=100;$('startBtn').disabled=true;$('bidBtn').disabled=false;
+const ceil=trueValue(c)*(.8+R()*.25);auc.ai=ceil;
+auc.t=setInterval(()=>{auc.left-=1.25;$('tm').style.width=Math.max(0,auc.left)+'%';
+if(auc.left>5&&R()<.09&&auc.price+inc()<auc.ai&&auc.lead!=='ai'){auc.price+=inc();auc.lead='ai';$('who').innerHTML=`<span class="r">${pick(["Monster Hat","Dealer #4471","Wholesale Wayne","CarMax-ish guy","Buy-Here-Pay-Here Bob"])}</span> leads`;$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,35);if(R()<.3)$('quip').textContent=pick(QUIPS)}
+if(auc.left<=0)finish()},100)}
+function inc(){return auc.price<5000?100:auc.price<15000?250:500}
+function playerBid(){if(!auc.run)return;const nx=auc.price+(auc.lead?inc():0);if(nx+FEE(nx)>S.cash)return flash("Insufficient funds. The bank laughed.");auc.price=nx;auc.lead='you';$('who').innerHTML='<span class="g">YOU</span> lead';$('bid').textContent=$$(auc.price);auc.left=Math.max(auc.left,40)}
+function flash(t){$('quip').innerHTML=`<span class="r">${t}</span>`}
+function finish(){clearInterval(auc.t);auc.run=false;const c=cur[cur.idx];
+if(auc.lead==='you'){if(S.lot.length>=SLOTS){log(`Won ${c.name} but your lot is full — sold back at a $300 penalty.`,'r');S.cash-=300;S.pl-=300}else{const fee=FEE(auc.price);c.cost=auc.price+fee;S.cash-=c.cost;S.bought++;S.lot.push(c);
+c.iss.forEach(i=>{i.revealed=true;if(i.chance&&R()<.4){i.c*=2.5;i.n+=" (worse than it looked)"}});
+log(`🔨 SOLD to you: ${c.name} for ${$$(auc.price)} + ${$$(fee)} fee.`,'g');reveal(c)}}
+else if(auc.lead==='ai')log(`${c.name} went to someone else for ${$$(auc.price)}. Dodged a bullet? Or a gem?`,'m');else log(`${c.name} no-saled. Even the seller gave up.`,'m');
+cur.idx++;save();render();if(!$('modal').classList.contains('on'))showCar()}
+function skip(){clearInterval(auc.t);cur.idx++;showCar()}
+function reveal(c){const ns=c.iss.filter(i=>!i.shown);modal(`<h2>🚗 Post-Sale Reveal</h2><h3>${c.name}</h3>
+${c.gem?`<p class="g">💎 GEM: ${c.gem}</p>`:''}${c.iss.length?'<ul>'+c.iss.map(i=>`<li>${i.shown?'':'🆕 '}<b>${i.n}</b> — ${i.perm?'<span class="r">permanent value hit</span>':'repair '+$$(i.c)}<br><span class="m">${i.o}</span></li>`).join('')+'</ul>':'<p class="g">Clean as a whistle. Suspiciously clean.</p>'}
+<p>${ns.length?`<span class="r">${ns.length} surprise(s)</span> the report forgot.`:'No surprises!'} Est. retail value now: <b class="y">${$$(trueValue(c))}</b> (paid ${$$(c.cost)})</p><button class="pri" onclick="closeM();showCar()">To the lot</button>`)}
+function modal(h){$('mbody').innerHTML=h;$('modal').classList.add('on')}function closeM(){$('modal').classList.remove('on');render()}
+function repair(id){const c=S.lot.find(x=>x.id==id),todo=c.iss.filter(i=>!i.fixed&&!i.perm);let tot=todo.reduce((a,i)=>a+i.c,0);if(!tot)return;if(S.cash<tot)return alert("Mechanic wants cash, not vibes.");S.cash-=tot;c.cost+=tot;
+let msg=`Repaired ${c.name} for ${$$(tot)}.`;todo.forEach(i=>i.fixed=true);if(R()<.15){const x=pick(ISSUES.filter(i=>!i.perm));c.iss.push({...x,revealed:true});msg+=` While in there, they found: ${x.n}. 🙃`}log(msg,'y');save();render()}
+function detail(id){const c=S.lot.find(x=>x.id==id);if(c.detailed||S.cash<250)return;S.cash-=250;c.cost+=250;c.detailed=true;log(`Detailed ${c.name}. Armor All everywhere. Even the pedals.`);save();render()}
+function offer(c){const tv=trueValue(c),k=.75+R()*.3+(S.rep-50)/500+Math.min(c.daysOnLot,10)*.01;return Math.round(tv*k/50)*50}
+function acceptOffer(id){const c=S.lot.find(x=>x.id==id);sell(c,c.offer,'retail');}
+function sell(c,amt,how){S.cash+=amt;const p=amt-c.cost;S.pl+=p;S.sold++;S.lot=S.lot.filter(x=>x!==c);
+const hidden=c.iss.filter(i=>!i.fixed&&!i.perm&&i.c>500).length;if(how==='retail'){S.rep=Math.max(0,Math.min(100,S.rep+(hidden?-6*hidden:3)));if(hidden)log(`Buyer discovered unfixed problems. Yelp review: ⭐ "Never again."`,'r')}
+log(`${how==='retail'?'🤝 Retail sold':'🔁 Ran back'} ${c.name} for ${$$(amt)} → ${p>=0?'<span class="g">+':'<span class="r">'}${$$(p)}</span>`);save();render()}
+function runBack(id){const c=S.lot.find(x=>x.id==id),amt=Math.round(trueValue(c)*(.72+R()*.2)/50)*50,fee=FEE(amt)*.6|0;sell(c,amt-fee,'auction')}
+function endDay(){S.day++;const rent=200+S.lot.length*40;S.cash-=rent;log(`Lot rent & insurance: ${$$(rent)}.`,'m');
+S.lot.forEach(c=>{c.daysOnLot++;c.offer=R()<.55+S.rep/250?offer(c):null;if(c.daysOnLot>6)c.mmr=Math.round(c.mmr*.98)});
+if(S.cash<0&&S.lot.length===0||S.cash<-3000){save();return gameOver()}newDay()}
+function gameOver(){modal(`<h2>💀 Bankrupt</h2><p>Your money melted. Rapidly. As foretold.</p><p>Days survived: ${S.day}<br>Cars bought: ${S.bought} · sold: ${S.sold}<br>Net P/L: ${$$(S.pl)}</p><button class="pri" onclick="closeM();newGame()">Try Again</button>`);localStorage.removeItem(KEY)}
+function render(){$('sDay').textContent=S.day;$('sCash').innerHTML=`<span class="${S.cash<0?'r':'g'}">${$$(S.cash)}</span>`;$('sPL').innerHTML=`<span class="${S.pl<0?'r':'g'}">${$$(S.pl)}</span>`;$('sRep').textContent=S.rep+(S.rep>70?' 😇':S.rep<30?' 🤡':'');$('sLot').textContent=S.lot.length+'/'+SLOTS;
+$('lotList').innerHTML=S.lot.length?S.lot.map(c=>{const fix=c.iss.filter(i=>!i.fixed&&!i.perm).reduce((a,i)=>a+i.c,0),tv=trueValue(c);
+return`<div class="lot"><b>${c.name}</b> <span class="m">· ${c.daysOnLot}d on lot</span>${c.gem?' 💎':''}<div class="row"><span>Into it: ${$$(c.cost)}</span><span>Est value: <b class="${tv>c.cost?'g':'r'}">${$$(tv)}</b></span></div>
+<div class="m" style="font-size:12px">${c.iss.map(i=>`${i.fixed?'✅':i.perm?'⛔':'🔧'} ${i.n}`).join('<br>')||'No known issues'}</div>
+${fix?`<button onclick="repair(${c.id})">🔧 Repair all ${$$(fix)}</button>`:''}${c.detailed?'':`<button onclick="detail(${c.id})">✨ Detail $250</button>`}
+${c.offer?`<button class="go" onclick="acceptOffer(${c.id})">Accept offer ${$$(c.offer)}</button><button onclick="S.lot.find(x=>x.id==${c.id}).offer=null;render()">Decline</button>`:'<span class="m" style="font-size:12px"> Waiting for retail offers (end day)…</span>'}
+<button class="bad" onclick="runBack(${c.id})">🔁 Run back through auction</button></div>`}).join(''):'<p class="m">Empty lot. Just you and a sad inflatable tube man.</p>';
+$('log').innerHTML=S.log.map(x=>`<div>${x}</div>`).join('')}
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(S){render();newDay()}else newGame();
+</script></body></html>
